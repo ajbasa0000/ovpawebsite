@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Events - OVPA{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Events Calendar</h1>
+
+        {% if events %}
+        <div class="card-grid">
+            {% for event in events %}
+            <div class="card">
+                <p class="card-meta">{{ event.start_datetime|date:"F d, Y - g:i A" }}</p>
+                <h3 class="card-title">{{ event.title }}</h3>
+                <p class="card-excerpt">{{ event.description|truncatewords:30|striptags }}</p>
+                {% if event.location %}
+                <p style="font-size: 0.875rem; color: var(--color-slate-600); margin-top: 0.5rem;">
+                    📍 {{ event.location }}
+                </p>
+                {% endif %}
+                <span
+                    style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--color-slate-100); border-radius: var(--border-radius); font-size: 0.875rem; margin-top: 0.5rem;">
+                    {{ event.get_event_type_display }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div style="text-align: center; margin-top: 2rem;">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline">Previous</a>
+            {% endif %}
+            <span style="margin: 0 1rem;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <p style="text-align: center; color: var(--color-slate-600);">No upcoming events at this time.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

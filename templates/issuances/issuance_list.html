@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Issuances - OVPA{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Issuances</h1>
+
+        <!-- Filter -->
+        <div style="max-width: 600px; margin: 0 auto 2rem;">
+            <form method="get" style="display: flex; gap: 1rem;">
+                <select name="type" class="form-control">
+                    <option value="">All Types</option>
+                    <option value="memo" {% if request.GET.type=='memo' %}selected{% endif %}>Memorandum</option>
+                    <option value="circular" {% if request.GET.type=='circular' %}selected{% endif %}>Circular</option>
+                    <option value="order" {% if request.GET.type=='order' %}selected{% endif %}>Order</option>
+                    <option value="resolution" {% if request.GET.type=='resolution' %}selected{% endif %}>Resolution
+                    </option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+
+        {% if issuances %}
+        <div style="max-width: 900px; margin: 0 auto;">
+            {% for issuance in issuances %}
+            <div class="card" style="margin-bottom: 1rem;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <h4 class="card-title">{{ issuance.issuance_number }}</h4>
+                        <p style="margin: 0.5rem 0; color: var(--color-slate-700);">{{ issuance.title }}</p>
+                        <span
+                            style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--color-slate-100); border-radius: var(--border-radius); font-size: 0.875rem;">
+                            {{ issuance.get_issuance_type_display }}
+                        </span>
+                    </div>
+                    <div style="text-align: right;">
+                        <p class="card-meta">{{ issuance.issuance_date|date:"M d, Y" }}</p>
+                        {% if issuance.attachment %}
+                        <a href="{{ issuance.attachment.url }}" class="btn btn-outline" download>Download</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div style="text-align: center; margin-top: 2rem;">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}"
+                class="btn btn-outline">Previous</a>
+            {% endif %}
+            <span style="margin: 0 1rem;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}"
+                class="btn btn-outline">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <p style="text-align: center; color: var(--color-slate-600);">No issuances available at this time.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

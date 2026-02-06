@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.title }} - OVPA{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <article style="max-width: 800px; margin: 0 auto;">
+            <h1>{{ service.title }}</h1>
+
+            <div style="margin: 2rem 0;">
+                <h3>Description</h3>
+                {{ service.description|safe }}
+            </div>
+
+            {% if service.requirements %}
+            <div style="margin: 2rem 0;">
+                <h3>Requirements</h3>
+                {{ service.requirements|safe }}
+            </div>
+            {% endif %}
+
+            {% if service.process %}
+            <div style="margin: 2rem 0;">
+                <h3>Process</h3>
+                {{ service.process|safe }}
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--color-slate-200);">
+                <a href="{% url 'services' %}" class="btn btn-outline">← Back to Services</a>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

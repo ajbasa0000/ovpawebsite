@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Document Repository - OVPA{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Document Repository</h1>
+
+        <!-- Search and Filter -->
+        <div style="max-width: 800px; margin: 0 auto 2rem;">
+            <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <input type="text" name="search" class="form-control" placeholder="Search documents..."
+                    value="{{ request.GET.search }}" style="flex: 1; min-width: 200px;">
+                <select name="category" class="form-control" style="min-width: 150px;">
+                    <option value="">All Categories</option>
+                    <option value="forms" {% if request.GET.category=='forms' %}selected{% endif %}>Forms</option>
+                    <option value="policies" {% if request.GET.category=='policies' %}selected{% endif %}>Policies
+                    </option>
+                    <option value="reports" {% if request.GET.category=='reports' %}selected{% endif %}>Reports</option>
+                    <option value="guidelines" {% if request.GET.category=='guidelines' %}selected{% endif %}>Guidelines
+                    </option>
+                    <option value="templates" {% if request.GET.category=='templates' %}selected{% endif %}>Templates
+                    </option>
+                    <option value="other" {% if request.GET.category=='other' %}selected{% endif %}>Other</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+
+        {% if documents %}
+        <div style="max-width: 900px; margin: 0 auto;">
+            {% for document in documents %}
+            <div class="card" style="margin-bottom: 1rem;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <h4 class="card-title">{{ document.title }}</h4>
+                        {% if document.description %}
+                        <p style="margin: 0.5rem 0; color: var(--color-slate-700);">{{ document.description }}</p>
+                        {% endif %}
+                        <div style="margin-top: 0.5rem;">
+                            <span
+                                style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--color-slate-100); border-radius: var(--border-radius); font-size: 0.875rem;">
+                                {{ document.get_category_display }}
+                            </span>
+                            {% if document.tags %}
+                            <span style="font-size: 0.875rem; color: var(--color-slate-600); margin-left: 0.5rem;">
+                                Tags: {{ document.tags }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <p class="card-meta">{{ document.created_at|date:"M d, Y" }}</p>
+                        <a href="{{ document.document_file.url }}" class="btn btn-primary" download>Download</a>
+                        <p style="font-size: 0.75rem; color: var(--color-slate-600); margin-top: 0.25rem;">
+                            {{ document.download_count }} downloads
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div style="text-align: center; margin-top: 2rem;">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
+                class="btn btn-outline">Previous</a>
+            {% endif %}
+            <span style="margin: 0 1rem;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
+                class="btn btn-outline">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <p style="text-align: center; color: var(--color-slate-600);">No documents found.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

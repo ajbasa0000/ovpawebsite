@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Office Structure - OVPA{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Office Structure</h1>
+
+        {% if structures %}
+        <div style="max-width: 900px; margin: 0 auto;">
+            {% for structure in structures %}
+            <div class="card" style="margin-bottom: 2rem;">
+                <h3 class="card-title">{{ structure.title }}</h3>
+                <div style="margin: 1rem 0;">
+                    {{ structure.description|safe }}
+                </div>
+                {% if structure.org_chart_image %}
+                <img src="{{ structure.org_chart_image.url }}" alt="{{ structure.title }}"
+                    style="width: 100%; border-radius: var(--border-radius); margin-top: 1rem;">
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align: center; color: var(--color-slate-600);">Office structure information will be available
+            soon.</p>
+        {% endif %}
+
+        {% if partners %}
+        <div style="margin-top: 3rem;">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Partner Offices</h2>
+            <div class="card-grid">
+                {% for partner in partners %}
+                <div class="card" style="text-align: center;">
+                    {% if partner.logo %}
+                    <img src="{{ partner.logo.url }}" alt="{{ partner.name }}"
+                        style="width: 100px; height: 100px; object-fit: contain; margin: 0 auto 1rem;">
+                    {% endif %}
+                    <h4 class="card-title">{{ partner.name }}</h4>
+                    {% if partner.description %}
+                    <p class="card-excerpt">{{ partner.description|truncatewords:20|striptags }}</p>
+                    {% endif %}
+                    {% if partner.website_url %}
+                    <a href="{{ partner.website_url }}" target="_blank" rel="noopener" class="btn btn-outline">Visit
+                        Website</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
