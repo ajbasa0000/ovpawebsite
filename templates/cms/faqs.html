@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Frequently Asked Questions - OVPA{% endblock %}
+
+{% block content %}
+<section class="hero" style="background: var(--color-maroon-primary); color: white; padding: 6rem 0;">
+    <div class="container">
+        <h1 style="color: white; margin-bottom: 1.5rem;">Frequently Asked Questions</h1>
+        <p class="animate-fade-in" style="font-size: 1.25rem; opacity: 0.9; max-width: 800px;">
+            Quick answers to common inquiries regarding administrative processes, university policies, and office services.
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <!-- FAQ Item 1 -->
+            <div style="margin-bottom: 1.5rem; background: white; border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;">
+                <h3 style="padding: 1.5rem; margin: 0; background: var(--color-slate-100); border-bottom: 1px solid var(--color-border); font-size: 1.1rem; color: var(--color-text-main);">
+                    How do I request an official issuance copy?
+                </h3>
+                <div style="padding: 1.5rem;">
+                    <p style="margin: 0; color: var(--color-text-muted); line-height: 1.6;">
+                        You can search for and download official issuances directly from our <a href="{% url 'issuances' %}" style="color: var(--color-maroon-primary); font-weight: 600;">Issuances Portal</a>. If you need a certified true copy, please submit a formal request through our Contact page.
+                    </p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 2 -->
+            <div style="margin-bottom: 1.5rem; background: white; border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;">
+                <h3 style="padding: 1.5rem; margin: 0; background: var(--color-slate-100); border-bottom: 1px solid var(--color-border); font-size: 1.1rem; color: var(--color-text-main);">
+                    Where can I find the forms for HR processing?
+                </h3>
+                <div style="padding: 1.5rem;">
+                    <p style="margin: 0; color: var(--color-text-muted); line-height: 1.6;">
+                        All downloadable forms, including those for HR, Accounting, and Supply Management, are available in the <a href="{% url 'documents' %}" style="color: var(--color-maroon-primary); font-weight: 600;">Document Repository</a> under the 'Forms' category.
+                    </p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 3 -->
+            <div style="margin-bottom: 1.5rem; background: white; border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;">
+                <h3 style="padding: 1.5rem; margin: 0; background: var(--color-slate-100); border-bottom: 1px solid var(--color-border); font-size: 1.1rem; color: var(--color-text-main);">
+                    What is the typical processing time for a Notice of Award?
+                </h3>
+                <div style="padding: 1.5rem;">
+                    <p style="margin: 0; color: var(--color-text-muted); line-height: 1.6;">
+                        Based on our administrative services charter, a standard Notice of Award processing takes approximately 20 minutes once all required documents are verified by the SSPMO. For more details, view our <a href="{% url 'services' %}" style="color: var(--color-maroon-primary); font-weight: 600;">Services Catalog</a>.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">Didn't find what you were looking for?</p>
+                <a href="{% url 'contact' %}" class="btn btn-primary">Contact Support Desk</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

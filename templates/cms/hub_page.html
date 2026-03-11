@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - OVPA{% endblock %}
+
+{% block content %}
+<section class="hero" style="background: var(--color-maroon-primary); color: white; padding: 6rem 0;">
+    <div class="container">
+        <h1 style="color: white; margin-bottom: 1.5rem;">{{ title }}</h1>
+        <p class="animate-fade-in" style="font-size: 1.25rem; opacity: 0.9; max-width: 800px;">
+            {{ content }}
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="card" style="padding: 4rem; text-align: center; background: white; border-radius: 20px;">
+            <div style="font-size: 4rem; margin-bottom: 2rem;">🚀</div>
+            <h2 style="margin-bottom: 1.5rem;">Section Under Modernization</h2>
+            <p style="color: var(--color-text-muted); max-width: 600px; margin: 0 auto 2.5rem;">
+                We are currently populating this section with the latest administrative data and project updates. Check back soon for the full experience.
+            </p>
+            <a href="{% url 'home' %}" class="btn btn-primary">Return Home</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

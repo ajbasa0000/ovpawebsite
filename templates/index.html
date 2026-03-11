@@ -5,119 +5,100 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero">
+<section class="hero animate-fade-in">
     <div class="container">
-        <h1>Office of the Vice President for Administration</h1>
-        <p>Supporting excellence in administrative services across the University of the Philippines System</p>
-        <div style="margin-top: 2rem;">
-            <a href="{% url 'page' 'about' %}" class="btn btn-primary">Learn More About Us</a>
-            <a href="{% url 'services' %}" class="btn btn-outline" style="margin-left: 1rem;">Our Services</a>
+        <div class="hero-content">
+            <span class="hero-tagline">Central Administration Hub</span>
+            <h1>Honor, Excellence, and Service in Administration</h1>
+            <p>The Office of the Vice President for Administration (OVPA) serves as the backbone of the University of the Philippines System, ensuring seamless operations and professional support services.</p>
+            <div style="margin-top: 3rem; display: flex; gap: 1rem;">
+                <a href="{% url 'page' 'about' %}" class="btn btn-primary">Strategic Mandate</a>
+                <a href="{% url 'services' %}" class="btn btn-outline">Explore Services</a>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Latest Issuances -->
-<section class="section" style="background-color: var(--color-slate-50);">
+
+
+<!-- Latest Issuances & News -->
+<section class="section">
     <div class="container">
-        <h2 style="text-align: center; margin-bottom: 2rem;">Latest Issuances</h2>
-        {% if latest_issuances %}
-        <div style="max-width: 800px; margin: 0 auto;">
-            {% for issuance in latest_issuances %}
-            <div class="card" style="margin-bottom: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div>
-                        <h4 class="card-title">{{ issuance.issuance_number }}</h4>
-                        <p style="margin: 0; color: var(--color-slate-700);">{{ issuance.title }}</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;">
+            <!-- Left: Issuances -->
+            <div>
+                <h2 class="mb-3">Official Issuances</h2>
+                {% if latest_issuances %}
+                    {% for issuance in latest_issuances %}
+                    <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--color-maroon-primary); margin-bottom: 1.5rem;">
+                        <span class="card-meta">{{ issuance.issuance_date|date:"F d, Y" }}</span>
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;"><a href="#">{{ issuance.issuance_number }}</a></h4>
+                        <p style="margin: 0; color: var(--color-text-muted); font-size: 0.9rem;">{{ issuance.title }}</p>
                     </div>
-                    <span class="card-meta">{{ issuance.issuance_date|date:"M d, Y" }}</span>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="{% url 'issuances' %}" class="btn btn-primary">View All Issuances</a>
-        </div>
-        {% else %}
-        <p style="text-align: center; color: var(--color-slate-600);">No issuances available at this time.</p>
-        {% endif %}
-    </div>
-</section>
-
-<!-- Featured News -->
-<section class="section">
-    <div class="container">
-        <h2 style="text-align: center; margin-bottom: 2rem;">News & Advisories</h2>
-        {% if featured_news %}
-        <div class="card-grid">
-            {% for article in featured_news %}
-            <div class="card">
-                {% if article.featured_image %}
-                <img src="{{ article.featured_image.url }}" alt="{{ article.title }}"
-                    style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--border-radius); margin-bottom: 1rem;">
-                {% endif %}
-                <p class="card-meta">{{ article.published_date|date:"F d, Y" }}</p>
-                <h3 class="card-title">{{ article.title }}</h3>
-                <p class="card-excerpt">{{ article.excerpt }}</p>
-                <a href="{% url 'news_detail' article.slug %}" class="btn btn-outline">Read More</a>
-            </div>
-            {% endfor %}
-        </div>
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="{% url 'news_list' %}" class="btn btn-primary">View All News</a>
-        </div>
-        {% else %}
-        <p style="text-align: center; color: var(--color-slate-600);">No news articles available at this time.</p>
-        {% endif %}
-    </div>
-</section>
-
-<!-- Upcoming Events -->
-<section class="section" style="background-color: var(--color-slate-50);">
-    <div class="container">
-        <h2 style="text-align: center; margin-bottom: 2rem;">Upcoming Events</h2>
-        {% if upcoming_events %}
-        <div class="card-grid">
-            {% for event in upcoming_events %}
-            <div class="card">
-                <p class="card-meta">{{ event.start_datetime|date:"F d, Y - g:i A" }}</p>
-                <h3 class="card-title">{{ event.title }}</h3>
-                <p class="card-excerpt">{{ event.description|truncatewords:20|striptags }}</p>
-                {% if event.location %}
-                <p style="font-size: 0.875rem; color: var(--color-slate-600);">📍 {{ event.location }}</p>
+                    {% endfor %}
+                    <a href="{% url 'issuances' %}" style="font-weight: 700; text-transform: uppercase; font-size: 0.8rem;">View Detailed Repository →</a>
+                {% else %}
+                    <p style="color: var(--color-text-muted);">Initial database sync in progress...</p>
                 {% endif %}
             </div>
-            {% endfor %}
+
+            <!-- Right: News & Advisories -->
+            <div>
+                <h2 class="mb-3">News & Advisories</h2>
+                {% if featured_news %}
+                    {% for article in featured_news %}
+                    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 1.5rem;">
+                        {% if article.featured_image %}
+                            <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" style="width: 100%; height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div style="padding: 1.5rem;">
+                            <span class="card-meta">{{ article.published_date|date:"F d, Y" }}</span>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">{{ article.title }}</h3>
+                            <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1.5rem;">{{ article.excerpt }}</p>
+                            <a href="{% url 'news_detail' article.slug %}" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Full Article</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="card" style="background: var(--color-bg-base); border-style: dashed; text-align: center; padding: 3rem;">
+                        <p style="color: var(--color-text-muted); margin: 0;">No active advisories reported.</p>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="{% url 'events' %}" class="btn btn-primary">View All Events</a>
-        </div>
-        {% else %}
-        <p style="text-align: center; color: var(--color-slate-600);">No upcoming events at this time.</p>
-        {% endif %}
     </div>
 </section>
 
-<!-- Quick Access -->
-<section class="section">
+<!-- Quick Action Portal -->
+<section class="section" style="background: white; border-top: 1px solid var(--color-border);">
     <div class="container">
-        <h2 style="text-align: center; margin-bottom: 2rem;">Quick Access</h2>
+        <div class="section-title">
+            <h2>Administrative Portals</h2>
+            <p style="color: var(--color-text-muted);">Direct access to key office functions and digital resources</p>
+        </div>
+        
         <div class="card-grid">
             <div class="card" style="text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">📋</div>
                 <h3 class="card-title">Services</h3>
-                <p>Explore the administrative services we provide to the UP community.</p>
-                <a href="{% url 'services' %}" class="btn btn-primary">View Services</a>
+                <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1.5rem;">Catalog of administrative requests, tracking, and faculty/staff services.</p>
+                <a href="{% url 'services' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">View Catalog</a>
             </div>
+            
             <div class="card" style="text-align: center;">
-                <h3 class="card-title">Documents</h3>
-                <p>Access forms, policies, reports, and other important documents.</p>
-                <a href="{% url 'documents' %}" class="btn btn-primary">Browse Documents</a>
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">📂</div>
+                <h3 class="card-title">Downloads</h3>
+                <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1.5rem;">Unified repository for official forms, policy guidelines, and reports.</p>
+                <a href="{% url 'documents' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Browse Files</a>
             </div>
+            
             <div class="card" style="text-align: center;">
-                <h3 class="card-title">Contact Us</h3>
-                <p>Get in touch with our office for inquiries and assistance.</p>
-                <a href="{% url 'contact' %}" class="btn btn-primary">Contact Form</a>
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">✉️</div>
+                <h3 class="card-title">Contact</h3>
+                <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1.5rem;">Official channels for public inquiries, feedback, and executive support.</p>
+                <a href="{% url 'contact' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Support Desk</a>
             </div>
         </div>
     </div>
 </section>
-{% endblock %}
+{% endblock %}

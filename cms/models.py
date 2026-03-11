@@ -42,6 +42,7 @@ class Page(BaseModel):
     """
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
     content = RichTextField()
     meta_description = models.TextField(
         max_length=160,
@@ -110,9 +111,26 @@ class Service(BaseModel):
     """
     Services offered by the office.
     """
+    SERVICE_CATEGORIES = [
+        ('internal', 'Internal Services'),
+        ('external', 'External Services'),
+    ]
+    TRANSACTION_TYPES = [
+        ('simple', 'Simple Transaction'),
+        ('complex', 'Complex Transaction'),
+        ('highly_technical', 'Highly Technical Transaction'),
+    ]
+    
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    service_category = models.CharField(max_length=20, choices=SERVICE_CATEGORIES, default='internal')
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES, default='simple')
+    duration = models.CharField(max_length=100, blank=True, help_text='Expected processing time (e.g., 20 minutes)')
     description = RichTextField()
+    where_to_secure = models.CharField(max_length=200, blank=True, help_text='Office or Unit where the service is secured')
+    who_may_avail = models.CharField(max_length=300, blank=True, help_text='Target constituents (e.g., UP System Employees)')
+    classification = models.CharField(max_length=50, blank=True, default='G2G', help_text='Classification (e.g., G2G, G2C)')
     requirements = RichTextField(blank=True, help_text='Requirements to avail this service')
     process = RichTextField(blank=True, help_text='Step-by-step process')
     icon = models.CharField(
@@ -321,3 +339,71 @@ class Feedback(models.Model):
     
     def __str__(self):
         return f"Feedback from {self.name or 'Anonymous'} - {self.submitted_at.strftime('%Y-%m-%d')}"
+
+
+class MediaGallery(BaseModel):
+    """
+    Independent repository for the Media Gallery.
+    """
+    title = models.CharField(max_length=200, help_text="Short title for the image.")
+    description = models.TextField(blank=True, help_text="Context or descriptive caption for the image.")
+    image_file = models.ImageField(upload_to='media_gallery/')
+    published_date = models.DateField(help_text="Date the event or subject occurred.")
+    
+    class Meta:
+        verbose_name = 'Media Gallery Item'
+        verbose_name_plural = 'Media Gallery Items'
+        ordering = ['-published_date', '-created_at']
+    
+    def __str__(self):
+        return self.title
+
+
+class Project(BaseModel):
+    """
+    Dedicated model for major initiatives and projects.
+    """
+    CATEGORY_CHOICES = [
+        ('sspmo', 'SSPMO'),
+        ('shrdo', 'SHRDO'),
+        ('sco', 'SCO'),
+        ('ovpa-qms', 'OVPA-QMS'),
+        ('special', 'Special Projects'),
+    ]
+    
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='special')
+    excerpt = models.TextField(help_text="Short summary for the project card.")
+    content = RichTextField(help_text="Full article content and design.")
+    featured_image = models.ImageField(upload_to='projects/', blank=True, null=True)
+    
+    class Meta:
+        verbose_name = 'Project'
+        verbose_name_plural = 'Projects'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} ({self.get_category_display()})"
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+
+class ProjectImage(BaseModel):
+    """
+    Separate database for images associated with a Project.
+    """
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='projects/gallery/')
+    caption = models.CharField(max_length=200, blank=True)
+    
+    class Meta:
+        verbose_name = 'Project Image'
+        verbose_name_plural = 'Project Images'
+        ordering = ['created_at']
+        
+    def __str__(self):
+        return f"Image for {self.project.title}"

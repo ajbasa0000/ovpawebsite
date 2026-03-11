@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - OVPA{% endblock %}
+
+{% block content %}
+<section class="hero" style="background: var(--color-maroon-primary); color: white; padding: 6rem 0;">
+    <div class="container">
+        <h1 style="color: white; margin-bottom: 1.5rem;">{{ title }}</h1>
+        <p class="animate-fade-in" style="font-size: 1.25rem; opacity: 0.9; max-width: 800px;">
+            A constituent office under the Office of the Vice President for Administration, University of the Philippines System.
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="card" style="padding: 4rem; background: white; border-radius: 20px; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 3rem; margin-bottom: 1.5rem; text-align: center; color: var(--color-maroon-primary);">
+                🏛️
+            </div>
+            <h2 style="margin-bottom: 2rem; text-align: center; color: var(--color-text-main);">Office Profile & Mandate</h2>
+            
+            <div style="max-width: 800px; margin: 0 auto; color: var(--color-text-muted); line-height: 1.8;">
+                <p style="margin-bottom: 1.5rem;">
+                    The <strong>{{ title }}</strong> operates as a vital node in the administrative network of the UP System. It is responsible for streamlining operations, ensuring compliance with state regulations, and supporting the overarching mission of the University.
+                </p>
+                <p style="margin-bottom: 1.5rem;">
+                    Current digital integration efforts are underway to migrate the physical mandate and organizational chart of this office into the central database.
+                </p>
+                
+                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--color-border); text-align: center;">
+                    <h3 style="margin-bottom: 1rem; color: var(--color-text-main); font-size: 1.2rem;">Quick Links</h3>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="{% url 'services' %}" class="btn btn-outline" style="min-width: 200px;">View Office Services</a>
+                        <a href="{% url 'documents' %}" class="btn btn-outline" style="min-width: 200px;">Download Forms</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

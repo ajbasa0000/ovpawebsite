@@ -7,18 +7,37 @@
     <div class="container">
         <h1 style="text-align: center; margin-bottom: 2rem;">News & Advisories</h1>
 
+        <!-- Modern Search Container -->
+        <div style="max-width: 900px; margin: 0 auto 5rem;">
+            <form method="get" action="{% url 'news_list' %}" class="search-group">
+                <span style="padding-left: 1.5rem; font-size: 1.2rem; color: var(--color-text-muted);">🔍</span>
+                <input type="text" name="q" value="{{ request.GET.q|default:'' }}" 
+                       class="search-input-field"
+                       placeholder="Search news, announcements, or keywords...">
+                <button type="submit" class="search-submit-btn">Search News</button>
+            </form>
+        </div>
+
         {% if news_articles %}
         <div class="card-grid">
             {% for article in news_articles %}
-            <div class="card">
+            <div class="card" style="display: flex; flex-direction: column;">
                 {% if article.featured_image %}
-                <img src="{{ article.featured_image.url }}" alt="{{ article.title }}"
-                    style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--border-radius); margin-bottom: 1rem;">
+                <div style="overflow: hidden; border-radius: 8px 8px 0 0; margin: -2.5rem -2.5rem 2rem -2.5rem;">
+                    <img src="{{ article.featured_image.url }}" alt="{{ article.title }}"
+                        style="width: 100%; height: 240px; object-fit: cover; transition: transform 0.5s ease;">
+                </div>
                 {% endif %}
-                <p class="card-meta">{{ article.published_date|date:"F d, Y" }}</p>
-                <h3 class="card-title">{{ article.title }}</h3>
-                <p class="card-excerpt">{{ article.excerpt }}</p>
-                <a href="{% url 'news_detail' article.slug %}" class="btn btn-outline">Read More</a>
+                <div style="flex: 1;">
+                    <p class="card-meta" style="color: var(--color-maroon-primary); font-weight: 800; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; margin-bottom: 1rem;">
+                        {{ article.published_date|date:"F d, Y" }}
+                    </p>
+                    <h3 style="font-size: 1.4rem; line-height: 1.3; margin-bottom: 1.25rem; color: var(--color-text-main);">{{ article.title }}</h3>
+                    <p style="color: var(--color-text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">{{ article.excerpt|truncatewords:25 }}</p>
+                </div>
+                <div style="margin-top: auto;">
+                    <a href="{% url 'news_detail' article.slug %}" class="btn btn-primary" style="width: 100%; display: inline-block; text-align: center;">Read Article</a>
+                </div>
             </div>
             {% endfor %}
         </div>

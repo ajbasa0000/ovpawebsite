@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Resources Hub - OVPA{% endblock %}
+
+{% block content %}
+<section class="hero" style="background: var(--color-maroon-primary); color: white; padding: 6rem 0;">
+    <div class="container">
+        <h1 style="color: white; margin-bottom: 1.5rem;">Resources & Catalogs</h1>
+        <p class="animate-fade-in" style="font-size: 1.25rem; opacity: 0.9; max-width: 800px;">
+            Access comprehensive administrative catalogs, official issuances, and institutional data portals to support seamless university operations.
+        </p>
+    </div>
+</section>
+
+<section class="section" style="background: var(--color-bg-base);">
+    <div class="container">
+        <div class="card-grid">
+            <!-- Administrative Services -->
+            <div class="card" style="box-shadow: var(--shadow-md);">
+                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">🛠️</div>
+                <h3 style="margin-bottom: 1rem; color: var(--color-text-main);">Administrative Services</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 2rem; flex: 1;">Explore the complete catalog of internal and external services provided by the OVPA network.</p>
+                <a href="{% url 'services' %}" class="btn btn-outline" style="width: 100%;">Browse Services</a>
+            </div>
+
+            <!-- Issuances -->
+            <div class="card" style="box-shadow: var(--shadow-md);">
+                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">📜</div>
+                <h3 style="margin-bottom: 1rem; color: var(--color-text-main);">Official Issuances</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 2rem; flex: 1;">Access the latest memoranda, circulars, and executive orders directing institutional operations.</p>
+                <a href="{% url 'issuances' %}" class="btn btn-outline" style="width: 100%;">View Issuances</a>
+            </div>
+
+            <!-- Documents -->
+            <div class="card" style="box-shadow: var(--shadow-md);">
+                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">📂</div>
+                <h3 style="margin-bottom: 1rem; color: var(--color-text-main);">Document Repository</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 2rem; flex: 1;">Download official forms, policy guidelines, and standard operating procedure templates.</p>
+                <a href="{% url 'documents' %}" class="btn btn-outline" style="width: 100%;">Access Repository</a>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card" style="box-shadow: var(--shadow-md);">
+                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">📊</div>
+                <h3 style="margin-bottom: 1rem; color: var(--color-text-main);">Statistics Dashboard</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 2rem; flex: 1;">Review operational metrics and institutional data driving evidence-based administration.</p>
+                <a href="{% url 'statistics' %}" class="btn btn-outline" style="width: 100%;">View Data</a>
+            </div>
+
+            <!-- Media Gallery -->
+            <div class="card" style="box-shadow: var(--shadow-md);">
+                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">📸</div>
+                <h3 style="margin-bottom: 1rem; color: var(--color-text-main);">Media Gallery</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 2rem; flex: 1;">Browse high-quality photographic archives of university events and historic milestones.</p>
+                <a href="{% url 'media_gallery' %}" class="btn btn-outline" style="width: 100%;">View Gallery</a>
+            </div>
+
+            <!-- FAQs -->
+            <div class="card" style="box-shadow: var(--shadow-md);">
+                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">❓</div>
+                <h3 style="margin-bottom: 1rem; color: var(--color-text-main);">FAQs & Support</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 2rem; flex: 1;">Find answers to common administrative inquiries and procedural guidelines.</p>
+                <a href="{% url 'faqs' %}" class="btn btn-outline" style="width: 100%;">Read FAQs</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

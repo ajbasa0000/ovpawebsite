@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Media Gallery - OVPA{% endblock %}
+
+{% block content %}
+<section class="hero" style="background: var(--color-maroon-primary); color: white; padding: 6rem 0;">
+    <div class="container">
+        <h1 style="color: white; margin-bottom: 1.5rem;">Media Catalog</h1>
+        <p class="animate-fade-in" style="font-size: 1.25rem; opacity: 0.9; max-width: 800px;">
+            A visual repository of milestones, ceremonies, and infrastructure development across the University System.
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if items %}
+        <div class="card-grid">
+            {% for item in items %}
+            <div class="card" style="padding: 0; overflow: hidden; border: none; box-shadow: var(--shadow-md);">
+                <img src="{{ item.image_file.url }}" alt="{{ item.title }}" style="width: 100%; height: 300px; object-fit: cover; display: block;">
+                <div style="padding: 1.5rem; background: white;">
+                    <p style="color: var(--color-maroon-primary); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">
+                        {{ item.published_date|date:"F Y" }}
+                    </p>
+                    <h3 style="font-size: 1.1rem; line-height: 1.4; margin: 0; color: var(--color-text-main);">
+                        {{ item.title }}
+                    </h3>
+                    {% if item.description %}
+                    <p style="margin-top: 1rem; color: var(--color-text-muted); font-size: 0.9rem;">
+                        {{ item.description|truncatewords:20 }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card" style="padding: 4rem; text-align: center; background: white; border-radius: 20px;">
+            <div style="font-size: 4rem; margin-bottom: 2rem;">🎞️</div>
+            <h2 style="margin-bottom: 1.5rem;">Gallery Archive Formatting</h2>
+            <p style="color: var(--color-text-muted); max-width: 600px; margin: 0 auto;">
+                High-resolution images from recent events are currently undergoing curation for institutional archives.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

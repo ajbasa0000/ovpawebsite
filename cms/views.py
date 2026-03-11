@@ -1,13 +1,15 @@
 from django.shortcuts import render
+from django.db import models
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import (
     Page, NewsArticle, Event, Service, Issuance,
-    Document, OfficeStructure, PartnerOffice
+    Document, OfficeStructure, PartnerOffice, MediaGallery, Project
 )
 from .forms import ContactInquiryForm, FeedbackForm
+from django.shortcuts import get_object_or_404
 
 
 def homepage(request):
@@ -46,7 +48,14 @@ class NewsListView(ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        return NewsArticle.objects.filter(status='published').order_by('-published_date')
+        queryset = NewsArticle.objects.filter(status='published').order_by('-published_date')
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                models.Q(title__icontains=q) | 
+                models.Q(content__icontains=q)
+            )
+        return queryset
 
 
 class NewsDetailView(DetailView):
@@ -65,7 +74,15 @@ class EventListView(ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        return Event.objects.filter(status='published').order_by('start_datetime')
+        queryset = Event.objects.filter(status='published').order_by('start_datetime')
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                models.Q(title__icontains=q) | 
+                models.Q(description__icontains=q) |
+                models.Q(location__icontains=q)
+            )
+        return queryset
 
 
 class ServiceListView(ListView):
@@ -74,7 +91,26 @@ class ServiceListView(ListView):
     context_object_name = 'services'
     
     def get_queryset(self):
-        return Service.objects.filter(status='published').order_by('display_order')
+        queryset = Service.objects.filter(status='published').order_by('display_order')
+        
+        category = self.request.GET.get('category')
+        if category:
+            queryset = queryset.filter(service_category=category)
+            
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                models.Q(title__icontains=q) | 
+                models.Q(description__icontains=q)
+            )
+            
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_category'] = self.request.GET.get('category', '')
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
 
 
 class ServiceDetailView(DetailView):
@@ -97,6 +133,13 @@ class IssuanceListView(ListView):
         issuance_type = self.request.GET.get('type')
         if issuance_type:
             queryset = queryset.filter(issuance_type=issuance_type)
+        
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(
+                models.Q(title__icontains=q) | 
+                models.Q(issuance_number__icontains=q)
+            )
         return queryset
 
 
@@ -119,13 +162,26 @@ class DocumentListView(ListView):
 
 def office_structure(request):
     """
-    Office structure and organizational chart view.
+    Office structure and organizational chart view with keyword search.
     """
+    q = request.GET.get('q')
     structures = OfficeStructure.objects.filter(status='published').order_by('display_order')
     partners = PartnerOffice.objects.filter(is_active=True).order_by('display_order')
+    
+    if q:
+        structures = structures.filter(
+            models.Q(title__icontains=q) | 
+            models.Q(description__icontains=q)
+        )
+        partners = partners.filter(
+            models.Q(name__icontains=q) | 
+            models.Q(description__icontains=q)
+        )
+        
     context = {
         'structures': structures,
         'partners': partners,
+        'search_query': q,
     }
     return render(request, 'office/structure.html', context)
 
@@ -150,3 +206,86 @@ class FeedbackView(FormView):
         form.save()
         messages.success(self.request, 'Thank you for your feedback!')
         return super().form_valid(form)
+def news_updates_hub(request):
+    """
+    Combined hub for News and Events.
+    """
+    news = NewsArticle.objects.filter(status='published').order_by('-published_date')[:6]
+    events = Event.objects.filter(status='published').order_by('start_datetime')[:6]
+    return render(request, 'cms/news_updates_hub.html', {
+        'news': news,
+        'events': events
+    })
+
+
+def resources_hub(request):
+    """
+    Main landing for all resources.
+    """
+    return render(request, 'cms/resources_hub.html')
+
+
+def media_gallery(request):
+    """
+    Media Gallery with photos and descriptions from the dedicated model.
+    """
+    items = MediaGallery.objects.filter(status='published').order_by('-published_date')
+    return render(request, 'cms/media_gallery.html', {'items': items})
+
+
+def statistics_dashboard(request):
+    """
+    Dashboard-like statistics view.
+    """
+    return render(request, 'cms/statistics.html')
+
+
+def faq_view(request):
+    """
+    Frequently Asked Questions.
+    """
+    return render(request, 'cms/faqs.html')
+
+
+def office_detail(request, office_code):
+    """
+    Detailed view for sub-offices (SSPMO, SHRDO, SCO).
+    """
+    # Assuming we might want to vary content eventually, for now using slugs or titles
+    office_map = {
+        'sspmo': 'System Supply and Property Management Office',
+        'shrdo': 'System Human Resources Development Office',
+        'sco': 'System Cash Office'
+    }
+    title = office_map.get(office_code.lower(), 'Office Detail')
+    return render(request, 'cms/office_detail.html', {'title': title, 'office_code': office_code})
+
+
+def careers_view(request):
+    return render(request, 'cms/hub_page.html', {'title': 'Careers', 'content': 'Join our team at the UP System.'})
+
+
+def projects_view(request):
+    projects = Project.objects.filter(status='published')
+    
+    # Group projects by category
+    projects_by_category = {}
+    for project in projects:
+        cat_name = project.get_category_display()
+        if cat_name not in projects_by_category:
+            projects_by_category[cat_name] = []
+        projects_by_category[cat_name].append(project)
+        
+    return render(request, 'cms/projects_hub.html', {
+        'title': 'Projects & Initiatives',
+        'projects_by_category': projects_by_category
+    })
+
+
+def project_detail(request, slug):
+    project = get_object_or_404(Project, slug=slug, status='published')
+    return render(request, 'cms/project_detail.html', {'project': project})
+
+
+def programs_view(request):
+    return render(request, 'cms/hub_page.html', {'title': 'Programs', 'content': 'Learn about our strategic programs.'})

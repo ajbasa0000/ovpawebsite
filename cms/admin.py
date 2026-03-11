@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Page, OfficeStructure, PartnerOffice, Service,
     Issuance, NewsArticle, Event, Document,
-    ContactInquiry, Feedback
+    ContactInquiry, Feedback, MediaGallery, Project, ProjectImage
 )
 
 
@@ -274,3 +274,53 @@ class FeedbackAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Feedback is submitted via form, not created in admin
         return False
+
+
+@admin.register(MediaGallery)
+class MediaGalleryAdmin(BaseAdmin):
+    list_display = ['title', 'published_date', 'status', 'created_by']
+    list_filter = ['status', 'published_date', 'created_at']
+    search_fields = ['title', 'description']
+    date_hierarchy = 'published_date'
+    readonly_fields = ['created_at', 'updated_at', 'created_by']
+    
+    fieldsets = (
+        ('Gallery Item Details', {
+            'fields': ('title', 'description', 'image_file', 'published_date')
+        }),
+        ('Publishing', {
+            'fields': ('status',)
+        }),
+        ('Metadata', {
+            'fields': ('created_by', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+class ProjectImageInline(admin.TabularInline):
+    model = ProjectImage
+    extra = 1
+    fields = ('image', 'caption')
+
+
+@admin.register(Project)
+class ProjectAdmin(BaseAdmin):
+    inlines = [ProjectImageInline]
+    list_display = ['title', 'category', 'status', 'created_at', 'created_by']
+    list_filter = ['category', 'status', 'created_at']
+    search_fields = ['title', 'excerpt', 'content']
+    readonly_fields = ['created_at', 'updated_at', 'created_by']
+    
+    fieldsets = (
+        ('Project Information', {
+            'fields': ('title', 'category', 'excerpt', 'content', 'featured_image')
+        }),
+        ('Publishing', {
+            'fields': ('status',)
+        }),
+        ('Metadata', {
+            'fields': ('created_by', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

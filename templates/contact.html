@@ -7,41 +7,45 @@
     <div class="container">
         <h1 style="text-align: center;">Contact Us</h1>
         <div style="max-width: 600px; margin: 2rem auto;">
-            <p style="text-align: center; margin-bottom: 2rem;">
-                Have questions or need assistance? Send us a message and we'll get back to you as soon as possible.
-            </p>
+            <div class="card" style="padding: 3rem; background: white; border-radius: 16px; box-shadow: var(--shadow-lg); margin-bottom: 2rem;">
+                <p style="text-align: center; color: var(--color-text-muted); margin-bottom: 2.5rem; font-size: 1.1rem; line-height: 1.6;">
+                    Have questions or need assistance? Send us a message and we'll get back to you as soon as possible.
+                </p>
 
-            <form method="post" class="contact-form">
-                {% csrf_token %}
+                <form method="post" class="contact-form">
+                    {% csrf_token %}
 
-                <div class="form-group">
-                    <label for="{{ form.name.id_for_label }}" class="form-label">Name *</label>
-                    {{ form.name }}
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Name <span style="color: var(--color-maroon-primary);">*</span></label>
+                        {{ form.name }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Email <span style="color: var(--color-maroon-primary);">*</span></label>
+                        {{ form.email }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.subject.id_for_label }}" class="form-label">Subject <span style="color: var(--color-maroon-primary);">*</span></label>
+                        {{ form.subject }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.message.id_for_label }}" class="form-label">Message <span style="color: var(--color-maroon-primary);">*</span></label>
+                        {{ form.message }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem;">Send Message</button>
+                </form>
+            </div>
+
+            <div class="card" style="background: var(--color-slate-50); border: 1px solid var(--color-border); padding: 2rem; border-radius: 12px; text-align: center;">
+                <h3 style="margin-bottom: 1.5rem; color: var(--color-text-main); font-size: 1.25rem;">Office Information</h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem; color: var(--color-text-muted);">
+                    <p style="margin: 0;"><strong>Email:</strong> <a href="mailto:ovpa@up.edu.ph" style="color: var(--color-maroon-primary);">ovpa@up.edu.ph</a></p>
+                    <p style="margin: 0;"><strong>Phone:</strong> (02) 8981-8500</p>
+                    <p style="margin: 0;"><strong>Address:</strong> University of the Philippines System, Diliman, Quezon City</p>
                 </div>
-
-                <div class="form-group">
-                    <label for="{{ form.email.id_for_label }}" class="form-label">Email *</label>
-                    {{ form.email }}
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ form.subject.id_for_label }}" class="form-label">Subject *</label>
-                    {{ form.subject }}
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ form.message.id_for_label }}" class="form-label">Message *</label>
-                    {{ form.message }}
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
-            </form>
-
-            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--color-slate-200);">
-                <h3>Office Information</h3>
-                <p><strong>Email:</strong> ovpa@up.edu.ph</p>
-                <p><strong>Phone:</strong> (02) 8981-8500</p>
-                <p><strong>Address:</strong> University of the Philippines System, Diliman, Quezon City</p>
             </div>
         </div>
     </div>

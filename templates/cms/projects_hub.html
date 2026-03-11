@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Projects & Initiatives - OVPA | University of the Philippines System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header" style="background: var(--color-maroon-primary); color: white; padding: 4rem 0;">
+    <div class="container text-center">
+        <h1 style="color: white; margin-bottom: 0.5rem;">Strategic Projects & Initiatives</h1>
+        <p style="opacity: 0.9; max-width: 600px; margin: 0 auto;">Discover our ongoing administrative modernization projects led by various OVPA offices.</p>
+    </div>
+</section>
+
+<!-- Content Grid -->
+<section class="section">
+    <div class="container">
+        
+        {% if not projects_by_category %}
+        <div class="card text-center" style="padding: 4rem;">
+            <h3>New Strategic Projects Loading...</h3>
+            <p style="color: var(--color-text-muted);">We are actively updating our portfolio of modernization projects.</p>
+        </div>
+        {% else %}
+
+            {% for category, project_list in projects_by_category.items %}
+            <div style="margin-bottom: 4rem;">
+                <!-- Category Heading -->
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                    <h2 style="margin: 0; font-size: 1.5rem;">{{ category }}</h2>
+                    <div style="height: 1px; flex: 1; background: var(--color-border);"></div>
+                </div>
+                
+                <div class="projects-container list-view">
+                    {% for project in project_list %}
+                    <a href="{% url 'project_detail' project.slug %}" class="card project-card" style="text-decoration: none;">
+                        
+                        <div class="project-card-image">
+                            {% if project.featured_image %}
+                            <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
+                            {% else %}
+                            <div class="placeholder-img">
+                                <span>OVPA Project</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="project-card-content">
+                            <h3 class="card-title" style="margin-bottom: 0.5rem; font-size: 1.125rem;">{{ project.title }}</h3>
+                            <p class="project-excerpt" style="color: var(--color-text-muted); font-size: 0.875rem; margin-bottom: 1rem; flex: 1; line-height: 1.5;">
+                                {{ project.excerpt|truncatewords:25 }}
+                            </p>
+                            
+                            <div style="display: flex; align-items: center; gap: 0.25rem; color: var(--color-maroon-primary); font-weight: 600; font-size: 0.813rem; margin-top: auto;">
+                                <span>Read Full Article</span>
+                                <span style="font-size: 1.125rem; line-height: 1;">&rarr;</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            
+        {% endif %}
+    </div>
+</section>
+
+<style>
+    /* Common Card Overrides */
+    .project-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Base components */
+    .project-card-image {
+        position: relative;
+        overflow: hidden;
+        background: var(--color-bg-base);
+    }
+    .project-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .project-card-image .placeholder-img {
+        width: 100%;
+        height: 100%;
+        background: var(--color-maroon-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .project-card-image .placeholder-img span {
+        color: var(--color-maroon-primary);
+        font-weight: bold;
+        opacity: 0.5;
+        font-size: 0.875rem;
+    }
+    .project-card-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    /* Hover Effects */
+    .project-card:hover .project-card-image img {
+        transform: scale(1.05);
+    }
+    .project-card:hover {
+        transform: translateY(-4px);
+    }
+
+    /* --- List Layout Mode (Permanent) --- */
+    .projects-container.list-view {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+    .projects-container.list-view .project-card {
+        flex-direction: row;
+        align-items: stretch;
+        padding: 1.25rem;
+    }
+    .projects-container.list-view .project-card-image {
+        width: 250px;
+        flex-shrink: 0;
+        margin: -1.25rem 1.25rem -1.25rem -1.25rem;
+        aspect-ratio: auto; /* Let it fill height */
+        border-radius: calc(var(--radius-md) - 2px) 0 0 calc(var(--radius-md) - 2px);
+    }
+    .projects-container.list-view .project-card-content {
+        justify-content: center;
+    }
+    .projects-container.list-view .project-excerpt {
+        margin-bottom: 1rem;
+        flex: 0;
+    }
+
+    /* Mobile adjustments for List View */
+    @media (max-width: 768px) {
+        .projects-container.list-view .project-card {
+            flex-direction: column;
+        }
+        .projects-container.list-view .project-card-image {
+            width: auto;
+            aspect-ratio: 16/9;
+            margin: -1.25rem -1.25rem 1.25rem -1.25rem;
+            border-radius: calc(var(--radius-md) - 2px) calc(var(--radius-md) - 2px) 0 0;
+        }
+    }
+</style>
+{% endblock %}

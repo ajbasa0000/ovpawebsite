@@ -7,22 +7,44 @@
     <div class="container">
         <h1 style="text-align: center; margin-bottom: 2rem;">Events Calendar</h1>
 
+        <!-- Modern Search Container -->
+        <div style="max-width: 900px; margin: 0 auto 5rem;">
+            <form method="get" action="{% url 'events' %}" class="search-group">
+                <span style="padding-left: 1.5rem; font-size: 1.2rem; color: var(--color-text-muted);">🔍</span>
+                <input type="text" name="q" value="{{ request.GET.q }}" 
+                       class="search-input-field"
+                       placeholder="Search events, locations, or keywords...">
+                <button type="submit" class="search-submit-btn">Search Events</button>
+            </form>
+        </div>
+
         {% if events %}
         <div class="card-grid">
             {% for event in events %}
-            <div class="card">
-                <p class="card-meta">{{ event.start_datetime|date:"F d, Y - g:i A" }}</p>
-                <h3 class="card-title">{{ event.title }}</h3>
-                <p class="card-excerpt">{{ event.description|truncatewords:30|striptags }}</p>
-                {% if event.location %}
-                <p style="font-size: 0.875rem; color: var(--color-slate-600); margin-top: 0.5rem;">
-                    📍 {{ event.location }}
-                </p>
-                {% endif %}
-                <span
-                    style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--color-slate-100); border-radius: var(--border-radius); font-size: 0.875rem; margin-top: 0.5rem;">
-                    {{ event.get_event_type_display }}
-                </span>
+            <div class="card" style="border-top: 4px solid var(--color-maroon-primary); padding-top: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                    <div style="background: var(--color-maroon-soft); color: var(--color-maroon-primary); padding: 0.5rem 1rem; border-radius: 6px; text-align: center; min-width: 80px;">
+                        <span style="display: block; font-size: 1.2rem; font-weight: 800; line-height: 1;">{{ event.start_datetime|date:"d" }}</span>
+                        <span style="display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">{{ event.start_datetime|date:"M" }}</span>
+                    </div>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; background: var(--color-bg-base); padding: 0.25rem 0.75rem; border-radius: 20px;">
+                        {{ event.get_event_type_display }}
+                    </span>
+                </div>
+                
+                <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--color-text-main);">{{ event.title }}</h3>
+                <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">{{ event.description|truncatewords:25|striptags }}</p>
+                
+                <div style="border-top: 1px solid var(--color-border); padding-top: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--color-text-main); font-weight: 500;">
+                        <span>🕒</span> {{ event.start_datetime|date:"g:i A" }}
+                    </div>
+                    {% if event.location %}
+                    <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--color-text-main); font-weight: 500;">
+                        <span>📍</span> {{ event.location }}
+                    </div>
+                    {% endif %}
+                </div>
             </div>
             {% endfor %}
         </div>

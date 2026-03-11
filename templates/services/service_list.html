@@ -3,27 +3,90 @@
 {% block title %}Services - OVPA{% endblock %}
 
 {% block content %}
-<section class="section">
+<section class="section" style="background: white;">
     <div class="container">
-        <h1 style="text-align: center; margin-bottom: 2rem;">Our Services</h1>
+        <div class="section-title">
+            <h1>Administrative Services</h1>
+            <p style="color: var(--color-text-muted);">Comprehensive catalog of administrative support and official processes</p>
+        </div>
+
+        <!-- Modern Search and Filters -->
+        <div style="max-width: 900px; margin: 0 auto 5rem;">
+            <form method="GET" action="{% url 'services' %}" style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Search Bar -->
+                <div class="search-group">
+                    <span style="padding-left: 1.5rem; font-size: 1.2rem; color: var(--color-text-muted);">🔍</span>
+                    <input type="text" name="q" value="{{ search_query }}" 
+                           class="search-input-field"
+                           placeholder="Search service title or keyboard (e.g. 'Leave', 'Hiring', 'Monetization')...">
+                    <button type="submit" class="search-submit-btn">Search Catalog</button>
+                </div>
+
+                <!-- Filter Pills -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+                    <span style="font-weight: 800; font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Filter by Category:</span>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <a href="?q={{ search_query }}" 
+                           style="padding: 0.6rem 1.2rem; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.2s;
+                           {% if not current_category %}background: var(--color-maroon-primary); color: white;{% else %}background: var(--color-bg-base); color: var(--color-text-main); border: 1px solid var(--color-border);{% endif %}">
+                            All
+                        </a>
+                        <a href="?category=internal&q={{ search_query }}" 
+                           style="padding: 0.6rem 1.2rem; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.2s;
+                           {% if current_category == 'internal' %}background: var(--color-maroon-primary); color: white;{% else %}background: var(--color-bg-base); color: var(--color-text-main); border: 1px solid var(--color-border);{% endif %}">
+                            Internal
+                        </a>
+                        <a href="?category=external&q={{ search_query }}" 
+                           style="padding: 0.6rem 1.2rem; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.2s;
+                           {% if current_category == 'external' %}background: var(--color-maroon-primary); color: white;{% else %}background: var(--color-bg-base); color: var(--color-text-main); border: 1px solid var(--color-border);{% endif %}">
+                            External
+                        </a>
+                        {% if search_query or current_category %}
+                        <a href="{% url 'services' %}" style="font-size: 0.8rem; color: var(--color-maroon-primary); font-weight: 700; margin-left: 1rem;">Reset</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
 
         {% if services %}
-        <div class="card-grid">
-            {% for service in services %}
-            <div class="card">
-                {% if service.icon %}
-                <div style="font-size: 3rem; color: var(--color-maroon); margin-bottom: 1rem;">
-                    <i class="{{ service.icon }}"></i>
-                </div>
-                {% endif %}
-                <h3 class="card-title">{{ service.title }}</h3>
-                <p class="card-excerpt">{{ service.description|truncatewords:30|striptags }}</p>
-                <a href="{% url 'service_detail' service.slug %}" class="btn btn-outline">Learn More</a>
+        {% regroup services by get_service_category_display as category_list %}
+        
+        {% for category in category_list %}
+        <div style="margin-bottom: 5rem;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem; border-bottom: 2px solid var(--color-maroon-soft); padding-bottom: 1rem;">
+                <h2 style="margin: 0; color: var(--color-maroon-primary);">{{ category.grouper }}</h2>
+                <span style="background: var(--color-maroon-primary); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">{{ category.list|length }} Items</span>
             </div>
-            {% endfor %}
+
+            <div class="card-grid">
+                {% for service in category.list %}
+                <div class="card" style="padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                            <span class="card-meta" style="margin: 0;">{{ service.get_transaction_type_display }}</span>
+                            <div style="background: var(--color-bg-base); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted); display: flex; align-items: center; gap: 0.4rem; border: 1px solid var(--color-border);">
+                                ⏱️ {{ service.duration }}
+                            </div>
+                        </div>
+                        <h3 class="card-title" style="font-size: 1.15rem; line-height: 1.4; margin-bottom: 1rem;">{{ service.title }}</h3>
+                        <p style="color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 2rem;">{{ service.description|truncatewords:20|striptags }}</p>
+                    </div>
+                    
+                    <div style="border-top: 1px solid var(--color-border); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.75rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em;">{{ service.classification }}</span>
+                        <a href="{% url 'service_detail' service.slug %}" style="font-weight: 700; font-size: 0.85rem; text-transform: uppercase;">Details →</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+        {% endfor %}
+        
         {% else %}
-        <p style="text-align: center; color: var(--color-slate-600);">No services available at this time.</p>
+        <div style="text-align: center; padding: 5rem 0; background: white; border-radius: var(--radius-md); border: 1px solid var(--color-border); border-style: dashed;">
+            <p style="color: var(--color-text-muted);">Service catalog is currently being updated.</p>
+        </div>
         {% endif %}
     </div>
 </section>

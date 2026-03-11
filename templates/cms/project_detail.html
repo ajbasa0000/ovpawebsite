@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }} - Projects | OVPA{% endblock %}
+
+{% block content %}
+<!-- Article Hero -->
+<section class="article-hero" style="background: var(--color-bg-base); padding: 4rem 0 2rem;">
+    <div class="container" style="max-width: 900px;">
+        <div style="margin-bottom: 2rem;">
+            <a href="{% url 'projects' %}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--color-text-muted); font-weight: 500; font-size: 0.875rem;">
+                <span>&larr;</span> Back to Projects
+            </a>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem;">
+            <span style="background: var(--color-maroon-soft); color: var(--color-maroon-primary); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                {{ project.get_category_display }}
+            </span>
+            <span style="color: var(--color-text-muted); font-size: 0.875rem;">
+                Launched {{ project.created_at|date:"F Y" }}
+            </span>
+        </div>
+        
+        <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.5rem; line-height: 1.2;">{{ project.title }}</h1>
+        <p style="font-size: 1.25rem; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 2rem;">
+            {{ project.excerpt }}
+        </p>
+    </div>
+</section>
+
+<!-- Article Content -->
+{% if project.content %}
+<section class="section" style="padding-top: 2rem;">
+    <div class="container" style="max-width: 800px;">
+        <div class="article-content" style="font-size: 1.125rem; line-height: 1.8; color: var(--color-text-main);">
+            {{ project.content|safe }}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Image Gallery -->
+<section class="section" style="padding-top: 1rem;">
+    <div class="container" style="max-width: 1000px;">
+        
+        <!-- Featured Image First (If present) -->
+        {% if project.featured_image %}
+        <div style="aspect-ratio: 21/9; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); margin-bottom: 2rem;">
+            <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        {% endif %}
+
+        <!-- Additional Gallery Images -->
+        {% if project.images.all %}
+        <div class="project-gallery">
+            {% for img in project.images.all %}
+            <div class="gallery-item">
+                <img src="{{ img.image.url }}" alt="{{ img.caption|default:project.title }}" loading="lazy">
+                {% if img.caption %}
+                <div class="gallery-caption">{{ img.caption }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Document End -->
+        <div style="margin-top: 5rem; padding-top: 2rem; border-top: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span class="site-title" style="font-size: 1rem;">OVPA Projects</span>
+            </div>
+            <div>
+                <a href="{% url 'projects' %}" class="btn btn-outline" style="padding: 0.5rem 1.5rem; font-size: 0.875rem;">View All Initiatives</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .article-content h2, .article-content h3 {
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+        color: var(--color-maroon-primary);
+    }
+    
+    .article-content p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .article-content ul, .article-content ol {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+    }
+    
+    .article-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--radius-md);
+        margin: 2rem 0;
+    }
+
+    .project-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .gallery-item {
+        position: relative;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        aspect-ratio: 4/3;
+        box-shadow: var(--shadow-sm);
+        background: var(--color-bg-alt);
+    }
+    
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .gallery-item:hover img {
+        transform: scale(1.05);
+    }
+    
+    .gallery-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        color: white;
+        padding: 1.5rem 1rem 1rem;
+        font-size: 0.875rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .gallery-item:hover .gallery-caption {
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}

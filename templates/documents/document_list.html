@@ -5,81 +5,119 @@
 {% block content %}
 <section class="section">
     <div class="container">
-        <h1 style="text-align: center; margin-bottom: 2rem;">Document Repository</h1>
+        <div class="section-title">
+            <h1>Document Repository</h1>
+            <p style="color: var(--color-text-muted);">Unified access to official forms, policies, and research materials</p>
+        </div>
 
-        <!-- Search and Filter -->
-        <div style="max-width: 800px; margin: 0 auto 2rem;">
-            <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <input type="text" name="search" class="form-control" placeholder="Search documents..."
-                    value="{{ request.GET.search }}" style="flex: 1; min-width: 200px;">
-                <select name="category" class="form-control" style="min-width: 150px;">
-                    <option value="">All Categories</option>
-                    <option value="forms" {% if request.GET.category=='forms' %}selected{% endif %}>Forms</option>
-                    <option value="policies" {% if request.GET.category=='policies' %}selected{% endif %}>Policies
-                    </option>
-                    <option value="reports" {% if request.GET.category=='reports' %}selected{% endif %}>Reports</option>
-                    <option value="guidelines" {% if request.GET.category=='guidelines' %}selected{% endif %}>Guidelines
-                    </option>
-                    <option value="templates" {% if request.GET.category=='templates' %}selected{% endif %}>Templates
-                    </option>
-                    <option value="other" {% if request.GET.category=='other' %}selected{% endif %}>Other</option>
-                </select>
-                <button type="submit" class="btn btn-primary">Search</button>
+        <!-- Modern Search and Filters -->
+        <div style="max-width: 900px; margin: 0 auto 5rem;">
+            <form method="get" action="{% url 'documents' %}" style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Search Bar -->
+                <div class="search-group">
+                    <span style="padding-left: 1.5rem; font-size: 1.2rem; color: var(--color-text-muted);">🔍</span>
+                    <input type="text" name="q" value="{{ request.GET.q|default:'' }}" 
+                           class="search-input-field"
+                           placeholder="Search document name or keyword (e.g. 'Form', 'Policy', 'Report')...">
+                    <button type="submit" class="search-submit-btn">Search Catalog</button>
+                </div>
+
+                <!-- Filter Pills -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+                    <span style="font-weight: 800; font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Filter by Category:</span>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <a href="?search={{ request.GET.search }}" 
+                           style="padding: 0.6rem 1.2rem; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.2s;
+                           {% if not request.GET.category %}background: var(--color-maroon-primary); color: white;{% else %}background: var(--color-bg-base); color: var(--color-text-main); border: 1px solid var(--color-border);{% endif %}">
+                            All
+                        </a>
+                        <a href="?category=forms&search={{ request.GET.search }}" 
+                           style="padding: 0.6rem 1.2rem; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.2s;
+                           {% if request.GET.category == 'forms' %}background: var(--color-maroon-primary); color: white;{% else %}background: var(--color-bg-base); color: var(--color-text-main); border: 1px solid var(--color-border);{% endif %}">
+                            Forms
+                        </a>
+                        <a href="?category=policies&search={{ request.GET.search }}" 
+                           style="padding: 0.6rem 1.2rem; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.2s;
+                           {% if request.GET.category == 'policies' %}background: var(--color-maroon-primary); color: white;{% else %}background: var(--color-bg-base); color: var(--color-text-main); border: 1px solid var(--color-border);{% endif %}">
+                            Policies
+                        </a>
+                        <a href="?category=reports&search={{ request.GET.search }}" 
+                           style="padding: 0.6rem 1.2rem; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.2s;
+                           {% if request.GET.category == 'reports' %}background: var(--color-maroon-primary); color: white;{% else %}background: var(--color-bg-base); color: var(--color-text-main); border: 1px solid var(--color-border);{% endif %}">
+                            Reports
+                        </a>
+                        <a href="?category=guidelines&search={{ request.GET.search }}" 
+                           style="padding: 0.6rem 1.2rem; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: all 0.2s;
+                           {% if request.GET.category == 'guidelines' %}background: var(--color-maroon-primary); color: white;{% else %}background: var(--color-bg-base); color: var(--color-text-main); border: 1px solid var(--color-border);{% endif %}">
+                            Guidelines
+                        </a>
+                        {% if request.GET.search or request.GET.category %}
+                        <a href="{% url 'documents' %}" style="font-size: 0.8rem; color: var(--color-maroon-primary); font-weight: 700; margin-left: 1rem;">Reset</a>
+                        {% endif %}
+                    </div>
+                </div>
             </form>
         </div>
 
         {% if documents %}
-        <div style="max-width: 900px; margin: 0 auto;">
-            {% for document in documents %}
-            <div class="card" style="margin-bottom: 1rem;">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
-                    <div style="flex: 1;">
-                        <h4 class="card-title">{{ document.title }}</h4>
-                        {% if document.description %}
-                        <p style="margin: 0.5rem 0; color: var(--color-slate-700);">{{ document.description }}</p>
-                        {% endif %}
-                        <div style="margin-top: 0.5rem;">
-                            <span
-                                style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--color-slate-100); border-radius: var(--border-radius); font-size: 0.875rem;">
-                                {{ document.get_category_display }}
-                            </span>
-                            {% if document.tags %}
-                            <span style="font-size: 0.875rem; color: var(--color-slate-600); margin-left: 0.5rem;">
-                                Tags: {{ document.tags }}
-                            </span>
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <div class="card-grid" style="grid-template-columns: 1fr;">
+                {% for document in documents %}
+                <div class="card" style="padding: 2.5rem; border-left: 6px solid var(--color-gold);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 3rem;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+                                <span class="card-meta" style="margin-bottom: 0;">{{ document.get_category_display }}</span>
+                                {% if document.tags %}
+                                <span style="font-size: 0.75rem; color: var(--color-text-muted); background: var(--color-bg-base); padding: 0.2rem 0.6rem; border-radius: 4px;"># {{ document.tags }}</span>
+                                {% endif %}
+                            </div>
+                            <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--color-text-main);">{{ document.title }}</h3>
+                            {% if document.description %}
+                            <p style="color: var(--color-text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 0;">{{ document.description }}</p>
                             {% endif %}
                         </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <p class="card-meta">{{ document.created_at|date:"M d, Y" }}</p>
-                        <a href="{{ document.document_file.url }}" class="btn btn-primary" download>Download</a>
-                        <p style="font-size: 0.75rem; color: var(--color-slate-600); margin-top: 0.25rem;">
-                            {{ document.download_count }} downloads
-                        </p>
+                        <div style="text-align: right; min-width: 180px;">
+                            <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1.5rem;">Added on {{ document.created_at|date:"F d, Y" }}</p>
+                            {% if document.document_file %}
+                            <a href="{{ document.document_file.url }}" class="btn btn-primary" style="width: 100%; font-size: 0.85rem;" download>
+                                <span>📥</span> Download File
+                            </a>
+                            {% else %}
+                            <button class="btn btn-outline" style="width: 100%; font-size: 0.85rem; opacity: 0.5; cursor: not-allowed;" disabled>
+                                <span>🔒</span> File Pending
+                            </button>
+                            {% endif %}
+                            <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.75rem; font-weight: 500;">
+                                Total Downloads: {{ document.download_count }}
+                            </p>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
 
-        <!-- Pagination -->
         {% if is_paginated %}
-        <div style="text-align: center; margin-top: 2rem;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 1.5rem; margin-top: 5rem;">
             {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
-                class="btn btn-outline">Previous</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
+                class="btn btn-outline" style="padding: 0.5rem 1.5rem;">← Previous</a>
             {% endif %}
-            <span style="margin: 0 1rem;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <span style="font-weight: 600; color: var(--color-text-muted);">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
             {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
-                class="btn btn-outline">Next</a>
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
+                class="btn btn-outline" style="padding: 0.5rem 1.5rem;">Next →</a>
             {% endif %}
         </div>
         {% endif %}
         {% else %}
-        <p style="text-align: center; color: var(--color-slate-600);">No documents found.</p>
+        <div style="text-align: center; padding: 6rem 0; background: white; border-radius: var(--radius-md); border: 1px solid var(--color-border); border-style: dashed;">
+            <div style="font-size: 3rem; margin-bottom: 1.5rem; opacity: 0.3;">📂</div>
+            <p style="color: var(--color-text-muted); font-size: 1.1rem;">No matching documents found in the repository.</p>
+            <a href="{% url 'documents' %}" class="mt-2" style="display: inline-block; color: var(--color-maroon-primary); font-weight: 700;">Reset Search</a>
+        </div>
         {% endif %}
     </div>
 </section>
-{% endblock %}
+{% endblock %}
