@@ -1,0 +1,54 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Manage Pages - OVPA CMD{% endblock %}
+{% block dashboard_title %}Page Manager{% endblock %}
+
+{% block dash_content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="margin: 0; font-weight: 800;">Page Manager</h1>
+    <a href="{% url 'page_add' %}" class="btn-dash btn-primary">
+        <i class="fa-solid fa-plus"></i> Create New Page
+    </a>
+</div>
+
+<div class="dash-card">
+    <table class="dash-table">
+        <thead>
+            <tr>
+                <th>Page Title</th>
+                <th>Slug</th>
+                <th>Status</th>
+                <th>Last Updated</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for page in pages %}
+            <tr>
+                <td><strong>{{ page.title }}</strong></td>
+                <td><code>/{{ page.slug }}/</code></td>
+                <td>
+                    <span class="badge badge-{{ page.status }}">
+                        {{ page.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ page.updated_at|date:"M d, Y" }}</td>
+                <td style="text-align: right;">
+                    <a href="{% url 'page' page.slug %}" class="btn-dash btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" target="_blank" title="View Public Page">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                    <a href="{% url 'page_edit' page.pk %}" class="btn-dash btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Edit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a href="{% url 'page_delete' page.pk %}" class="btn-dash btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align: center; padding: 4rem; color: var(--dash-text-muted);">No pages found. Create your first one above.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

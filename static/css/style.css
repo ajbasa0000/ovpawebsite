@@ -617,3 +617,76 @@ a {
     .btn { width: 100%; }
     .btn + .btn { margin-left: 0 !important; margin-top: 1rem; }
 }
+/* ===== Refined Minimalist Page Layouts ===== */
+.breadcrumb {
+    display: flex !important;
+    justify-content: center;
+    gap: 0.5rem;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 auto 2rem !important;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "/";
+    margin-right: 0.5rem;
+    color: #cbd5e1;
+}
+
+.breadcrumb-item a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--color-maroon-primary);
+}
+
+.content-body {
+    max-width: 850px;
+    margin: 0 auto;
+    line-height: 1.8;
+    color: var(--color-text-main);
+}
+
+.content-body p {
+    margin-bottom: 1.8rem;
+}
+
+.content-body h3 {
+    margin: 5rem 0 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--color-border);
+    font-size: 2.2rem;
+    color: var(--color-text-main);
+    font-family: var(--font-heading);
+}
+
+.content-body h4 {
+    margin: 3.5rem 0 1.2rem;
+    color: var(--color-maroon-primary);
+    font-weight: 700;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.content-body ul, .content-body ol {
+    margin: 2rem 0 3rem;
+    padding-left: 2rem;
+}
+
+.content-body li {
+    margin-bottom: 1rem;
+}
+
+.content-body strong {
+    color: var(--color-text-main);
+}

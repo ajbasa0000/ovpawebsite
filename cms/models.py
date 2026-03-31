@@ -1,7 +1,24 @@
 from django.db import models
 from django.utils.text import slugify
 from django.conf import settings
+from django.utils import timezone
 from ckeditor.fields import RichTextField
+
+
+class SoftDeleteManager(models.Manager):
+    """
+    Manager that filters out soft-deleted items by default.
+    """
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
+class AllObjectsManager(models.Manager):
+    """
+    Manager to retrieve all objects, including soft-deleted ones.
+    """
+    def get_queryset(self):
+        return super().get_queryset()
 
 
 class BaseModel(models.Model):
@@ -18,11 +35,11 @@ class BaseModel(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='draft',
+        default='published',
         help_text='Content status in the publishing workflow'
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -31,9 +48,40 @@ class BaseModel(models.Model):
         related_name='%(class)s_created'
     )
     
+    is_deleted = models.BooleanField(
+        default=False,
+        help_text='If checked, content is archived and hidden from the public site.'
+    )
+    deleted_at = models.DateTimeField(null=True, blank=True)
+    
+    objects = SoftDeleteManager()
+    all_objects = AllObjectsManager()
+    
     class Meta:
         abstract = True
         ordering = ['-created_at']
+
+    def delete(self, *args, **kwargs):
+        """
+        Soft delete the object.
+        """
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+        self.save()
+
+    def restore(self):
+        """
+        Restore a soft-deleted object.
+        """
+        self.is_deleted = False
+        self.deleted_at = None
+        self.save()
+
+    def hard_delete(self, *args, **kwargs):
+        """
+        Permanently delete the object.
+        """
+        super().delete(*args, **kwargs)
 
 
 class Page(BaseModel):
@@ -87,7 +135,7 @@ class OfficeStructure(BaseModel):
         return self.title
 
 
-class PartnerOffice(models.Model):
+class PartnerOffice(BaseModel):
     """
     Partner agencies and offices.
     """
@@ -286,7 +334,7 @@ class Document(BaseModel):
         self.save(update_fields=['download_count'])
 
 
-class ContactInquiry(models.Model):
+class ContactInquiry(BaseModel):
     """
     Contact form submissions.
     """
@@ -294,7 +342,6 @@ class ContactInquiry(models.Model):
     email = models.EmailField()
     subject = models.CharField(max_length=200)
     message = models.TextField()
-    submitted_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
     resolved_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -307,13 +354,13 @@ class ContactInquiry(models.Model):
     class Meta:
         verbose_name = 'Contact Inquiry'
         verbose_name_plural = 'Contact Inquiries'
-        ordering = ['-submitted_at']
+        ordering = ['-created_at']
     
     def __str__(self):
         return f"{self.name} - {self.subject}"
 
 
-class Feedback(models.Model):
+class Feedback(BaseModel):
     """
     Feedback form submissions.
     """
@@ -329,16 +376,15 @@ class Feedback(models.Model):
     email = models.EmailField(blank=True)
     feedback = models.TextField()
     rating = models.IntegerField(choices=RATING_CHOICES, blank=True, null=True)
-    submitted_at = models.DateTimeField(auto_now_add=True)
     is_reviewed = models.BooleanField(default=False)
     
     class Meta:
         verbose_name = 'Feedback'
         verbose_name_plural = 'Feedback'
-        ordering = ['-submitted_at']
+        ordering = ['-created_at']
     
     def __str__(self):
-        return f"Feedback from {self.name or 'Anonymous'} - {self.submitted_at.strftime('%Y-%m-%d')}"
+        return f"Feedback from {self.name or 'Anonymous'} - {self.created_at.strftime('%Y-%m-%d') if self.created_at else 'No Date'}"
 
 
 class MediaGallery(BaseModel):
@@ -407,3 +453,26 @@ class ProjectImage(BaseModel):
         
     def __str__(self):
         return f"Image for {self.project.title}"
+
+
+class StaffMember(BaseModel):
+    """
+    Personnel and staff directory for the office.
+    """
+    name = models.CharField(max_length=200)
+    position = models.CharField(max_length=200)
+    unit = models.CharField(max_length=200)
+    is_top_management = models.BooleanField(
+        default=False, 
+        help_text="Highlights the member in the Executive Leadership section."
+    )
+    display_order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = 'Staff Member'
+        verbose_name_plural = 'Staff Members'
+        ordering = ['display_order', 'name']
+        
+    def __str__(self):
+        return f"{self.name} - {self.position}"

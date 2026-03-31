@@ -4,13 +4,24 @@
 {% block meta_description %}{{ page.meta_description|default:page.title }}{% endblock %}
 
 {% block content %}
-<section class="section" style="background: white;">
+<section class="section" style="background: white; padding-top: 3rem;">
     <div class="container">
-        <div style="text-align: center; margin-bottom: 5rem;">
-            <h1 style="display: inline-block; border-bottom: 5px solid var(--color-maroon-primary); padding-bottom: 1rem;">{{ page.title }}</h1>
+        <!-- Breadcrumbs (Minimalist & Centered) -->
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+            </ul>
+        </nav>
+
+        <!-- Header Unit -->
+        <div style="text-align: center; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid var(--color-border);">
+            <h1 style="display: inline-block; font-size: clamp(2.5rem, 5vw, 3.5rem); margin: 0; color: var(--color-text-main);">{{ page.title }}</h1>
+            <div style="width: 80px; height: 5px; background: var(--color-maroon-primary); margin: 1.5rem auto 0; border-radius: 5px;"></div>
         </div>
         
-        <div class="content-body" style="max-width: 900px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem; color: var(--color-text-main);">
+        <!-- Simplified Content Layout -->
+        <div class="content-body" style="max-width: 850px; margin: 0 auto; line-height: 2; font-size: 1.15rem; color: var(--color-text-main);">
             {{ page.content|safe }}
         </div>
     </div>

@@ -70,17 +70,22 @@ class OfficeStructureAdmin(BaseAdmin):
 
 
 @admin.register(PartnerOffice)
-class PartnerOfficeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'display_order', 'is_active', 'website_url']
-    list_filter = ['is_active']
+class PartnerOfficeAdmin(BaseAdmin):
+    list_display = ['name', 'display_order', 'is_active', 'status', 'created_at']
+    list_filter = ['is_active', 'status', 'created_at']
     search_fields = ['name', 'description']
+    readonly_fields = ['created_at', 'updated_at', 'created_by']
     
     fieldsets = (
         ('Information', {
             'fields': ('name', 'description', 'logo', 'website_url')
         }),
         ('Display', {
-            'fields': ('display_order', 'is_active')
+            'fields': ('display_order', 'status', 'is_active')
+        }),
+        ('Metadata', {
+            'fields': ('created_by', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
         }),
     )
 
@@ -221,16 +226,16 @@ class DocumentAdmin(BaseAdmin):
 
 
 @admin.register(ContactInquiry)
-class ContactInquiryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'email', 'subject', 'submitted_at', 'is_resolved']
-    list_filter = ['is_resolved', 'submitted_at']
+class ContactInquiryAdmin(BaseAdmin):
+    list_display = ['name', 'email', 'subject', 'created_at', 'is_resolved']
+    list_filter = ['is_resolved', 'created_at']
     search_fields = ['name', 'email', 'subject', 'message']
-    readonly_fields = ['name', 'email', 'subject', 'message', 'submitted_at']
-    date_hierarchy = 'submitted_at'
+    readonly_fields = ['name', 'email', 'subject', 'message', 'created_at', 'updated_at', 'created_by']
+    date_hierarchy = 'created_at'
     
     fieldsets = (
         ('Inquiry Details', {
-            'fields': ('name', 'email', 'subject', 'message', 'submitted_at')
+            'fields': ('name', 'email', 'subject', 'message', 'created_at')
         }),
         ('Resolution', {
             'fields': ('is_resolved', 'resolved_by')
@@ -249,16 +254,16 @@ class ContactInquiryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Feedback)
-class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ['name', 'email', 'rating', 'submitted_at', 'is_reviewed']
-    list_filter = ['rating', 'is_reviewed', 'submitted_at']
+class FeedbackAdmin(BaseAdmin):
+    list_display = ['name', 'email', 'rating', 'created_at', 'is_reviewed']
+    list_filter = ['rating', 'is_reviewed', 'created_at']
     search_fields = ['name', 'email', 'feedback']
-    readonly_fields = ['name', 'email', 'feedback', 'rating', 'submitted_at']
-    date_hierarchy = 'submitted_at'
+    readonly_fields = ['name', 'email', 'feedback', 'rating', 'created_at', 'updated_at', 'created_by']
+    date_hierarchy = 'created_at'
     
     fieldsets = (
         ('Feedback Details', {
-            'fields': ('name', 'email', 'feedback', 'rating', 'submitted_at')
+            'fields': ('name', 'email', 'feedback', 'rating', 'created_at')
         }),
         ('Review Status', {
             'fields': ('is_reviewed',)

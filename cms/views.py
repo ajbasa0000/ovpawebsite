@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import (
     Page, NewsArticle, Event, Service, Issuance,
-    Document, OfficeStructure, PartnerOffice, MediaGallery, Project
+    Document, OfficeStructure, PartnerOffice, MediaGallery, Project, StaffMember
 )
 from .forms import ContactInquiryForm, FeedbackForm
 from django.shortcuts import get_object_or_404
@@ -162,11 +162,14 @@ class DocumentListView(ListView):
 
 def office_structure(request):
     """
-    Office structure and organizational chart view with keyword search.
+    Office structure and organizational chart view with keyword search and staff directory.
     """
     q = request.GET.get('q')
     structures = OfficeStructure.objects.filter(status='published').order_by('display_order')
     partners = PartnerOffice.objects.filter(is_active=True).order_by('display_order')
+    
+    # Staff Directory
+    staff_members = StaffMember.objects.filter(is_active=True, status='published').order_by('display_order')
     
     if q:
         structures = structures.filter(
@@ -177,10 +180,17 @@ def office_structure(request):
             models.Q(name__icontains=q) | 
             models.Q(description__icontains=q)
         )
+        staff_members = staff_members.filter(
+            models.Q(name__icontains=q) |
+            models.Q(position__icontains=q) |
+            models.Q(unit__icontains=q)
+        )
         
     context = {
         'structures': structures,
         'partners': partners,
+        'executive_staff': staff_members.filter(is_top_management=True),
+        'admin_staff': staff_members.filter(is_top_management=False),
         'search_query': q,
     }
     return render(request, 'office/structure.html', context)

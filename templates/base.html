@@ -7,7 +7,7 @@
     <title>{% block title %}OVPA - University of the Philippines System{% endblock %}</title>
     
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.1">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.3">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -174,7 +174,14 @@
             
             <div class="footer-bottom">
                 <p>&copy; {% now "Y" %} Office of the Vice President for Administration, University of the Philippines System.</p>
-                <p style="margin-top: 0.5rem; font-size: 0.75rem;">An official website of the Republic of the Philippines.</p>
+                <div style="margin-top: 1rem; font-size: 0.75rem; opacity: 0.8; display: flex; align-items: center; justify-content: center; gap: 1.5rem;">
+                    <p>An official website of the Republic of the Philippines.</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard_home' %}" style="color: white; text-decoration: none;"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                    {% else %}
+                        <a href="{% url 'admin:login' %}?next={% url 'dashboard_home' %}" style="color: white; text-decoration: none;"><i class="fa-solid fa-lock"></i> Staff Access Portal</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </footer>

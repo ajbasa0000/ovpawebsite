@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard - OVPA CMD{% endblock %}</title>
+    
+    {% load static %}
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.3">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1.0">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="dashboard-body">
+
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+        <div class="dash-sidebar-header">
+            <h2>OVPA CMD</h2>
+            <p style="font-size: 0.7rem; opacity: 0.7; margin-top: 0.5rem;">Content Manager Dashboard</p>
+        </div>
+        
+        <nav class="dash-nav">
+            <a href="{% url 'dashboard_home' %}" class="dash-nav-item {% if request.resolver_match.url_name == 'dashboard_home' %}active{% endif %}">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+            
+            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Publications</div>
+            <a href="{% url 'module_list' 'pages' %}" class="dash-nav-item {% if 'pages' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-file-lines"></i> Page Manager
+            </a>
+            <a href="{% url 'module_list' 'news' %}" class="dash-nav-item {% if 'news' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-newspaper"></i> News & Advisories
+            </a>
+            <a href="{% url 'module_list' 'events' %}" class="dash-nav-item {% if 'events' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-calendar-days"></i> University Calendar
+            </a>
+            
+            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Institutional</div>
+            <a href="{% url 'module_list' 'staff' %}" class="dash-nav-item {% if 'staff' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-users"></i> Staff Directory
+            </a>
+            <a href="{% url 'module_list' 'projects' %}" class="dash-nav-item {% if 'projects' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-briefcase"></i> Major Projects
+            </a>
+            <a href="{% url 'module_list' 'partners' %}" class="dash-nav-item {% if 'partners' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-handshake"></i> Partner Offices
+            </a>
+
+            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Resources</div>
+            <a href="{% url 'module_list' 'services' %}" class="dash-nav-item {% if 'services' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-gears"></i> Programs & Services
+            </a>
+            <a href="{% url 'module_list' 'documents' %}" class="dash-nav-item {% if 'documents' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-file-arrow-up"></i> Document Hub
+            </a>
+            <a href="{% url 'module_list' 'issuances' %}" class="dash-nav-item {% if 'issuances' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-stamp"></i> Official Issuances
+            </a>
+
+            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Communication & Media</div>
+            <a href="{% url 'module_list' 'gallery' %}" class="dash-nav-item {% if 'gallery' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-images"></i> Media Gallery
+            </a>
+            <a href="{% url 'module_list' 'inquiries' %}" class="dash-nav-item {% if 'inquiries' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-envelope-open-text"></i> Contact Inquiries
+            </a>
+            <a href="{% url 'module_list' 'feedback' %}" class="dash-nav-item {% if 'feedback' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-comments"></i> User Feedback
+            </a>
+
+            {% if user.is_superuser %}
+            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Administrative</div>
+            <a href="{% url 'recycle_bin' %}" class="dash-nav-item {% if 'recycle-bin' in request.path %}active{% endif %}" style="color: #fda4af;">
+                <i class="fa-solid fa-trash-can"></i> Recycle Bin
+            </a>
+            {% endif %}
+        </nav>
+        
+        <div style="margin-top: auto; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 35px; height: 35px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">{{ user.username|first|upper }}</div>
+                <div style="flex-grow: 1;">
+                    <div style="font-size: 0.85rem; font-weight: 600;">{{ user.username }}</div>
+                    <div style="font-size: 0.7rem; opacity: 0.6;">{% if user.is_superuser %}Super Admin{% else %}Content Manager{% endif %}</div>
+                </div>
+            </div>
+            <a href="{% url 'admin:logout' %}?next={% url 'home' %}" style="display: block; margin-top: 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.6); text-decoration: none;">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="dash-main">
+        <header class="dash-header">
+            <div class="dash-breadcrumb" style="font-size: 0.85rem; font-weight: 500; color: var(--dash-text-muted);">
+                <span style="opacity: 0.5;">Dashboard</span> / {% block dashboard_title %}Overview{% endblock %}
+            </div>
+            <div class="dash-actions">
+                <a href="{% url 'home' %}" class="btn-dash btn-secondary" target="_blank">
+                    <i class="fa-solid fa-eye"></i> View Site
+                </a>
+            </div>
+        </header>
+        
+        <div class="dash-content">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="dash-alert dash-alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block dash_content %}{% endblock %}
+        </div>
+        
+        <footer style="padding: 1.5rem 2.5rem; font-size: 0.75rem; color: var(--dash-text-muted); border-top: 1px solid var(--dash-border); margin-top: auto;">
+            &copy; 2026 Office of the Vice President for Administration - University of the Philippines System
+        </footer>
+    </main>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -9,11 +9,13 @@ from cms import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('dashboard/', include('cms.dashboard_urls')),
     
     # Homepage
     path('', views.homepage, name='home'),
     
     # Pages (About, Mandate, Mission, Vision, etc.)
+    path('about/', views.page_view, {'slug': 'about'}, name='about_direct'),
     path('page/<slug:slug>/', views.page_view, name='page'),
     
     # News & Updates Hub

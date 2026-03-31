@@ -1,0 +1,40 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Recycle Bin - OVPA CMD{% endblock %}
+{% block dashboard_title %}Recycle Bin (Super Admin Only){% endblock %}
+
+{% block dash_content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="margin: 0; font-weight: 800;">Recycle Bin</h1>
+    <p style="color: var(--dash-text-muted);">Manage soft-deleted items. You can restore them to their original location.</p>
+</div>
+
+<div class="dash-card">
+    <table class="dash-table">
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Content Type</th>
+                <th>Deleted On</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in deleted_items %}
+            <tr>
+                <td><strong>{{ item.obj }}</strong></td>
+                <td><span class="badge badge-secondary" style="background: #e2e8f0; color: #475569;">{{ item.type }}</span></td>
+                <td>{{ item.obj.deleted_at|date:"M d, Y H:i" }}</td>
+                <td style="text-align: right;">
+                    <a href="{% url 'restore_item' item.model_key item.obj.pk %}" class="btn-dash btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Restore">
+                        <i class="fa-solid fa-trash-arrow-up"></i> Restore
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align: center; padding: 4rem; color: var(--dash-text-muted);">The Recycle Bin is empty. No archived content found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

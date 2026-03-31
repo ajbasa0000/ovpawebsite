@@ -2,21 +2,85 @@
 
 {% block title %}Office Structure - OVPA{% endblock %}
 
+{% block extra_css %}
+<style>
+    .staff-card {
+        position: relative;
+        padding: 2.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        overflow: hidden;
+    }
+    
+    .staff-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .executive-card {
+        border-top: 5px solid var(--color-maroon-primary);
+        background: linear-gradient(to bottom, transparent, hsla(348, 83%, 28%, 0.05));
+    }
+    
+    .staff-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--color-maroon-primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        letter-spacing: 0.05em;
+    }
+    
+    .staff-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        background: var(--color-bg-base);
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .staff-name {
+        font-family: var(--font-heading);
+        font-size: 1.4rem;
+        color: var(--color-text-main);
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .staff-position {
+        color: var(--color-maroon-primary);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+    
+    .staff-unit {
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="section">
     <div class="container">
         <h1 style="text-align: center; margin-bottom: 2rem;">Office Structure</h1>
         
-        <!-- Modern Search Container -->
-        <div style="max-width: 900px; margin: 0 auto 5rem;">
-            <form method="get" action="{% url 'office_structure' %}" class="search-group">
-                <span style="padding-left: 1.5rem; font-size: 1.2rem; color: var(--color-text-muted);">🔍</span>
-                <input type="text" name="q" value="{{ search_query|default:'' }}" 
-                       class="search-input-field"
-                       placeholder="Search hierarchy, units, or partners...">
-                <button type="submit" class="search-submit-btn">Search Office</button>
-            </form>
-        </div>
 
         <!-- Organizational Structure -->
         {% if structures %}
@@ -49,9 +113,48 @@
                 {% endfor %}
             </div>
         </div>
-        {% else %}
-        <div style="text-align: center; padding: 6rem 0; background: white; border-radius: var(--radius-md); border: 1px solid var(--color-border); border-style: dashed; margin-bottom: 6rem;">
-            <p style="color: var(--color-text-muted);">Information about the office structure will be updated shortly.</p>
+        {% endif %}
+
+        <!-- Executive Leadership -->
+        {% if executive_staff %}
+        <div style="margin-bottom: 6rem;">
+            <div style="text-align: center; margin-bottom: 3.5rem;">
+                <h2 style="display: inline-block; border-bottom: 4px solid var(--color-gold); padding-bottom: 0.5rem; margin-bottom: 1rem;">Executive Leadership</h2>
+                <p style="color: var(--color-text-muted);">Top management and advisory officials of the OVPA</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; max-width: 1100px; margin: 0 auto;">
+                {% for staff in executive_staff %}
+                <div class="card staff-card executive-card">
+                    <div class="staff-badge">Leadership</div>
+                    <h3 class="staff-name" style="margin-top: 1rem;">{{ staff.name }}</h3>
+                    <p class="staff-position">{{ staff.position }}</p>
+                    <p class="staff-unit">{{ staff.unit }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Administrative Personnel -->
+        {% if admin_staff %}
+        <div style="margin-bottom: 6rem;">
+            <div style="text-align: center; margin-bottom: 3.5rem;">
+                <h2 style="display: inline-block; border-bottom: 4px solid var(--color-maroon-primary); padding-bottom: 0.5rem; margin-bottom: 1rem;">Administrative Personnel</h2>
+                <p style="color: var(--color-text-muted);">Dedicated staff supporting the university's administrative operations</p>
+            </div>
+            
+            <div class="card-grid">
+                {% for staff in admin_staff %}
+                <div class="card staff-card">
+                    <h3 class="staff-name" style="font-size: 1.1rem; margin-top: 0.5rem;">{{ staff.name }}</h3>
+                    <p class="staff-position" style="font-size: 0.9rem;">{{ staff.position }}</p>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-bg-base); font-size: 0.8rem; color: var(--color-maroon-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                        {{ staff.unit }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
 

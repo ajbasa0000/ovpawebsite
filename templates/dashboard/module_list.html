@@ -1,0 +1,59 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Manage {{ verbose_name }} - OVPA CMD{% endblock %}
+{% block dashboard_title %}{{ verbose_name }}{% endblock %}
+
+{% block dash_content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="margin: 0; font-weight: 800;">{{ verbose_name }}</h1>
+    <a href="{% url 'module_add' model_name %}" class="btn-dash btn-primary">
+        <i class="fa-solid fa-plus"></i> Add New
+    </a>
+</div>
+
+<div class="dash-card">
+    <table class="dash-table">
+        <thead>
+            <tr>
+                {% for h in headers %}
+                <th>{{ h }}</th>
+                {% endfor %}
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                {% for cell in row.cells %}
+                <td>
+                    {% if cell.type == 'status' %}
+                        <span class="badge badge-{{ cell.raw }}">{{ cell.display }}</span>
+                    {% elif cell.type == 'bool' %}
+                        {% if cell.value %}
+                            <span class="badge badge-published">Yes</span>
+                        {% else %}
+                            <span class="badge badge-archived">No</span>
+                        {% endif %}
+                    {% elif cell.bold %}
+                        <strong>{{ cell.value }}</strong>
+                    {% else %}
+                        {{ cell.value }}
+                    {% endif %}
+                </td>
+                {% endfor %}
+                <td style="text-align: right;">
+                    <a href="{% url 'module_edit' model_name row.pk %}" class="btn-dash btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Edit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a href="{% url 'module_delete' model_name row.pk %}" class="btn-dash btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="{{ col_count }}" style="text-align: center; padding: 4rem; color: var(--dash-text-muted);">No items found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

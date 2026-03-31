@@ -1,0 +1,58 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Manage Staff - OVPA CMD{% endblock %}
+{% block dashboard_title %}Staff Directory{% endblock %}
+
+{% block dash_content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="margin: 0; font-weight: 800;">Staff Directory</h1>
+    <a href="{% url 'staff_add' %}" class="btn-dash btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Staff Member
+    </a>
+</div>
+
+<div class="dash-card">
+    <table class="dash-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Unit</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in staff %}
+            <tr>
+                <td><strong>{{ member.name }}</strong></td>
+                <td>{{ member.position }}</td>
+                <td>{{ member.unit }}</td>
+                <td style="text-align: center;">{{ member.display_order }}</td>
+                <td>
+                    {% if member.is_active %}
+                    <span class="badge badge-published">Active</span>
+                    {% else %}
+                    <span class="badge badge-archived">Inactive</span>
+                    {% endif %}
+                    {% if member.is_top_management %}
+                    <span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;">Executive</span>
+                    {% endif %}
+                </td>
+                <td style="text-align: right;">
+                    <a href="{% url 'staff_edit' member.pk %}" class="btn-dash btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Edit">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a href="{% url 'staff_delete' member.pk %}" class="btn-dash btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" style="text-align: center; padding: 4rem; color: var(--dash-text-muted);">No staff members found. Add your first one above.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
