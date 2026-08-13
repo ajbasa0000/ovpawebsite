@@ -158,6 +158,28 @@
         </div>
         {% endif %}
 
+        <!-- OVPA-Quality Management System Personnel -->
+        {% if qms_staff %}
+        <div style="margin-bottom: 6rem;">
+            <div style="text-align: center; margin-bottom: 3.5rem;">
+                <h2 style="display: inline-block; border-bottom: 4px solid #059669; padding-bottom: 0.5rem; margin-bottom: 1rem;">OVPA - Quality Management System (QMS)</h2>
+                <p style="color: var(--color-text-muted);">Team dedicated to quality assurance, ISO standards, and process excellence</p>
+            </div>
+            
+            <div class="card-grid">
+                {% for staff in qms_staff %}
+                <div class="card staff-card" style="border-top: 4px solid #059669;">
+                    <h3 class="staff-name" style="font-size: 1.1rem; margin-top: 0.5rem;">{{ staff.name }}</h3>
+                    <p class="staff-position" style="font-size: 0.9rem; color: #059669;">{{ staff.position }}</p>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-bg-base); font-size: 0.8rem; color: #059669; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                        {{ staff.unit }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Partner Offices -->
         {% if partners %}
         <div style="margin-top: 6rem;">

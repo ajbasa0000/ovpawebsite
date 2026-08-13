@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Page, OfficeStructure, PartnerOffice, Service,
     Issuance, NewsArticle, Event, Document,
-    ContactInquiry, Feedback, MediaGallery, Project, ProjectImage
+    ContactInquiry, Feedback, MediaGallery, Project, ProjectImage, StaffMember, AdvisoryTicker
 )
 
 
@@ -329,3 +329,12 @@ class ProjectAdmin(BaseAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+@admin.register(AdvisoryTicker)
+class AdvisoryTickerAdmin(BaseAdmin):
+    list_display = ['text', 'category', 'is_active', 'display_order', 'created_at']
+    list_filter = ['category', 'is_active', 'status']
+    search_fields = ['text', 'link_url']
+    list_editable = ['is_active', 'display_order']
+    readonly_fields = ['created_at', 'updated_at', 'created_by']

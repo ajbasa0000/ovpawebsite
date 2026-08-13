@@ -476,3 +476,30 @@ class StaffMember(BaseModel):
         
     def __str__(self):
         return f"{self.name} - {self.position}"
+
+
+class AdvisoryTicker(BaseModel):
+    """
+    Urgent announcements and running advisory text for the site-wide top ticker bar.
+    """
+    CATEGORY_CHOICES = [
+        ('notice', 'Admin Notice'),
+        ('workshop', 'Workshop / Event'),
+        ('maintenance', 'System Maintenance'),
+        ('emergency', 'Emergency / Suspension'),
+        ('general', 'General Advisory'),
+    ]
+    
+    text = models.CharField(max_length=300, help_text="Advisory text to display in the running ticker")
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default='notice')
+    link_url = models.CharField(max_length=300, blank=True, null=True, help_text="Optional target link URL (e.g., /resources/issuances/)")
+    is_active = models.BooleanField(default=True, help_text="Set active to include in the ticker bar")
+    display_order = models.IntegerField(default=0, help_text="Order in which advisories appear")
+
+    class Meta:
+        verbose_name = 'Advisory Ticker Item'
+        verbose_name_plural = 'Advisory Ticker Items'
+        ordering = ['display_order', '-created_at']
+
+    def __str__(self):
+        return f"[{self.get_category_display()}] {self.text[:50]}"

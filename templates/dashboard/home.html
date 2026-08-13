@@ -26,9 +26,9 @@
     </div>
     
     <div class="stat-card">
-        <div class="stat-title">Services</div>
-        <div class="stat-value">{{ stats.total_services }}</div>
-        <p style="font-size: 0.8rem; color: #8b5cf6;"><i class="fa-solid fa-handshake"></i> Direct Support</p>
+        <div class="stat-title">Advisory Ticker Items</div>
+        <div class="stat-value">{{ stats.advisories }}</div>
+        <p style="font-size: 0.8rem; color: #8b5cf6;"><i class="fa-solid fa-bullhorn"></i> <a href="{% url 'module_list' 'advisories' %}" style="color: #8b5cf6; text-decoration: none;">Top Marquee Bar</a></p>
     </div>
 </div>
 

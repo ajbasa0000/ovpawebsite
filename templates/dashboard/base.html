@@ -29,9 +29,12 @@
                 <i class="fa-solid fa-gauge"></i> Dashboard
             </a>
             
-            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Publications</div>
+            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Publications & Advisories</div>
             <a href="{% url 'module_list' 'pages' %}" class="dash-nav-item {% if 'pages' in request.path %}active{% endif %}">
                 <i class="fa-solid fa-file-lines"></i> Page Manager
+            </a>
+            <a href="{% url 'module_list' 'advisories' %}" class="dash-nav-item {% if 'advisories' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-bullhorn"></i> Advisory Ticker Bar
             </a>
             <a href="{% url 'module_list' 'news' %}" class="dash-nav-item {% if 'news' in request.path %}active{% endif %}">
                 <i class="fa-solid fa-newspaper"></i> News & Advisories

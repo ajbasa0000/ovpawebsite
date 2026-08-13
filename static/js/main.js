@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     });
     
-    // Form Validation Enhancement
+// Form Validation Enhancement
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -62,4 +62,204 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // --- GOV.PH Feature 1: PST Live Digital Clock ---
+    function updatePSTClock() {
+        const clockElem = document.getElementById('pst-live-clock');
+        if (!clockElem) return;
+
+        // Create date formatted in Asia/Manila (PST)
+        const now = new Date();
+        const options = {
+            timeZone: 'Asia/Manila',
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        };
+
+        const formatter = new Intl.DateTimeFormat('en-US', options);
+        clockElem.textContent = formatter.format(now);
+    }
+    
+    updatePSTClock();
+    setInterval(updatePSTClock, 1000);
+
+    // --- GOV.PH Feature 2: Font Size Adjuster ---
+    let currentFontSizeOffset = 0;
+    const bodyElem = document.body;
+
+    const btnDecrease = document.getElementById('btn-font-decrease');
+    const btnReset = document.getElementById('btn-font-reset');
+    const btnIncrease = document.getElementById('btn-font-increase');
+
+    if (btnDecrease && btnReset && btnIncrease) {
+        btnDecrease.addEventListener('click', function() {
+            if (currentFontSizeOffset > -2) {
+                currentFontSizeOffset--;
+                applyFontSize();
+            }
+        });
+
+        btnReset.addEventListener('click', function() {
+            currentFontSizeOffset = 0;
+            applyFontSize();
+        });
+
+        btnIncrease.addEventListener('click', function() {
+            if (currentFontSizeOffset < 4) {
+                currentFontSizeOffset++;
+                applyFontSize();
+            }
+        });
+
+        function applyFontSize() {
+            bodyElem.style.fontSize = (100 + currentFontSizeOffset * 8) + '%';
+        }
+    }
+
+    // --- GOV.PH Feature 3: High Contrast Mode Toggle ---
+    const btnContrast = document.getElementById('btn-high-contrast');
+    if (btnContrast) {
+        // Load saved state
+        if (localStorage.getItem('govph_high_contrast') === 'enabled') {
+            bodyElem.classList.add('high-contrast');
+        }
+
+        btnContrast.addEventListener('click', function() {
+            bodyElem.classList.toggle('high-contrast');
+            if (bodyElem.classList.contains('high-contrast')) {
+                localStorage.setItem('govph_high_contrast', 'enabled');
+            } else {
+                localStorage.setItem('govph_high_contrast', 'disabled');
+            }
+        });
+    }
+
+    // --- GOV.PH Feature 4: Accessibility Popout Panel Toggle ---
+    const btnAccToggle = document.getElementById('btn-accessibility-toggle');
+    const accPanel = document.getElementById('accessibility-popout-panel');
+    const btnClosePopout = document.getElementById('btn-close-popout');
+
+    if (btnAccToggle && accPanel) {
+        btnAccToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = accPanel.style.display === 'block';
+            accPanel.style.display = isOpen ? 'none' : 'block';
+        });
+
+        if (btnClosePopout) {
+            btnClosePopout.addEventListener('click', function(e) {
+                e.stopPropagation();
+                accPanel.style.display = 'none';
+            });
+        }
+
+        // Close popout on click outside
+        document.addEventListener('click', function(e) {
+            if (accPanel.style.display === 'block' && !accPanel.contains(e.target) && e.target !== btnAccToggle) {
+                accPanel.style.display = 'none';
+            }
+        });
+    }
+
+    // --- ISO Certificate Popout Modal Handlers ---
+    const btnOpenIsoModal = document.getElementById('btn-open-iso-modal');
+    const btnCloseIsoModal = document.getElementById('btn-close-iso-modal');
+    const isoModal = document.getElementById('iso-certificate-modal');
+
+    if (btnOpenIsoModal && isoModal) {
+        btnOpenIsoModal.addEventListener('click', function(e) {
+            e.preventDefault();
+            isoModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        });
+
+        if (btnCloseIsoModal) {
+            btnCloseIsoModal.addEventListener('click', function() {
+                isoModal.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+        }
+
+        // Close on clicking backdrop
+        isoModal.addEventListener('click', function(e) {
+            if (e.target === isoModal) {
+                isoModal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Close on ESC key press
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isoModal.style.display === 'flex') {
+                isoModal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // --- Urgent Announcements & Advisories Continuous Marquee Text ---
+    const tickerSlider = document.getElementById('ticker-slider');
+    const btnTickerPause = document.getElementById('btn-ticker-pause');
+
+    if (tickerSlider) {
+        // Duplicate items to ensure seamless infinite looping marquee
+        tickerSlider.innerHTML += tickerSlider.innerHTML;
+
+        let posX = 0;
+        const speed = 1.2; // Pixels per frame
+        let animationFrameId = null;
+        let isTickerPaused = false;
+
+        function animateMarquee() {
+            posX -= speed;
+            const halfWidth = tickerSlider.scrollWidth / 2;
+            if (Math.abs(posX) >= halfWidth) {
+                posX = 0;
+            }
+            tickerSlider.style.transform = `translateX(${posX}px)`;
+            if (!isTickerPaused) {
+                animationFrameId = requestAnimationFrame(animateMarquee);
+            }
+        }
+
+        animationFrameId = requestAnimationFrame(animateMarquee);
+
+        // Pause on mouse hover over marquee area
+        const marqueeWrapper = document.getElementById('marquee-wrapper');
+        if (marqueeWrapper) {
+            marqueeWrapper.addEventListener('mouseenter', function() {
+                isTickerPaused = true;
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            });
+            marqueeWrapper.addEventListener('mouseleave', function() {
+                if (!btnTickerPause || !btnTickerPause.classList.contains('user-paused')) {
+                    isTickerPaused = false;
+                    animationFrameId = requestAnimationFrame(animateMarquee);
+                }
+            });
+        }
+
+        // Toggle via Pause/Play Button
+        if (btnTickerPause) {
+            btnTickerPause.addEventListener('click', function() {
+                if (isTickerPaused) {
+                    btnTickerPause.classList.remove('user-paused');
+                    isTickerPaused = false;
+                    animationFrameId = requestAnimationFrame(animateMarquee);
+                    btnTickerPause.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    btnTickerPause.classList.add('user-paused');
+                    isTickerPaused = true;
+                    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                    btnTickerPause.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+        }
+    }
 });

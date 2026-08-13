@@ -190,7 +190,8 @@ def office_structure(request):
         'structures': structures,
         'partners': partners,
         'executive_staff': staff_members.filter(is_top_management=True),
-        'admin_staff': staff_members.filter(is_top_management=False),
+        'qms_staff': staff_members.filter(is_top_management=False, unit='OVPA-Quality Management System'),
+        'admin_staff': staff_members.filter(is_top_management=False).exclude(unit='OVPA-Quality Management System'),
         'search_query': q,
     }
     return render(request, 'office/structure.html', context)

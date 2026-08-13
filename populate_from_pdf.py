@@ -112,9 +112,9 @@ def populate():
     # Staff already exists from previous run, but we can re-create to be sure
     StaffMember.objects.all().delete()
     staff_data = [
-        ("Augustus C. Resurreccion", "Vice President for Administration", "OVPA", True),
-        ("Tiffany Adelaine Tan", "Assistant Vice President for Administration", "OVPA", True),
-        ("Richard S. Javier", "Assistant Vice President for Administration / HR Director", "OVPA", True),
+        ("Tiffany Adelaine G. Tan", "Vice President for Administration", "OVPA", True),
+        ("Augustus C. Resurreccion", "Assistant Vice President for Administration and HR Director", "OVPA", True),
+        ("Richard S. Javier", "Assistant Vice President for Administration / Organizational Development", "OVPA", True),
         ("Michael P. Lagaya", "Special Assistant to the Vice President", "UP Open University", False),
         ("Rogelio T. Estrada", "Program Development Associate (PDA)", "UP Diliman", False),
         ("Rosalinda J. Tingco", "Program Development Associate (PDA)", "UP Diliman", False),
@@ -131,10 +131,10 @@ def populate():
         ("Wojthaila Mhae P. Luis", "Junior Office Associate", "OVPA", False),
         ("Sheena R. Vicente", "Supervising Office Associate", "OVPA", False),
         ("Jasfer M. Jumapao", "Senior Office Associate", "OVPA", False),
-        ("Arlene A. Castillo", "Senior Project Officer", "OVPA", False),
-        ("Siegfred C. Laborte", "Senior Office Associate", "OVPA", False),
-        ("Ronald Lao", "Junior Research Analyst", "OVPA", False),
-        ("Ericka Jazz L. Matriz", "Senior Office Aide", "OVPA", False),
+        ("Noralyn Agbay", "Senior Project Officer", "OVPA-Quality Management System", False),
+        ("Siegfred C. Laborte", "Senior Office Associate", "OVPA-Quality Management System", False),
+        ("Ronald Lao", "Junior Research Analyst", "OVPA-Quality Management System", False),
+        ("Ericka Jazz L. Matriz", "Senior Office Aide", "OVPA-Quality Management System", False),
     ]
     for idx, (name, pos, unit, is_top) in enumerate(staff_data):
         StaffMember.objects.create(
@@ -164,6 +164,21 @@ def populate():
             'status': 'published', 'created_by': admin_user
         }
     )
+
+    # 5. Advisory Ticker Items
+    print("Seeding Advisory Ticker Items...")
+    from cms.models import AdvisoryTicker
+    AdvisoryTicker.objects.all().delete()
+    ticker_items = [
+        ("⚠️ Deadline for SALN Submission for FY 2026 is on April 30, 2026. Please submit to your respective HRDO.", "notice", "/resources/issuances/", 0),
+        ("📢 Let's Talk Workshop: THIS WAY (Strengthening Organizational Leadership & Values) — April 22, 2026.", "workshop", "/events/", 1),
+        ("🔧 Scheduled Administrative Systems Maintenance on Saturday, 10:00 PM – 2:00 AM.", "maintenance", "/news/", 2),
+    ]
+    for text, cat, link, order in ticker_items:
+        AdvisoryTicker.objects.create(
+            text=text, category=cat, link_url=link, display_order=order,
+            is_active=True, status='published', created_by=admin_user
+        )
 
     print("Comprehensive data population complete!")
 

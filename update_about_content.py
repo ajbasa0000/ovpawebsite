@@ -8,7 +8,7 @@ from cms.models import Page
 
 def update_about_page():
     content = """
-    <h3>Institutional Pillars</h3>
+    <h3 id="pillars">Institutional Pillars</h3>
     <div style="margin-bottom: 3rem;">
         <h4 style="color: var(--color-maroon-primary);">VISION</h4>
         <p>To be a holistic and responsible steward of the University's resources, both human capital and properties, guiding University decisions on people, property, and fiscal operations with social responsibility and strategic insights.</p>
@@ -23,7 +23,7 @@ def update_about_page():
         <p>Transparency, Integrity, Excellence, and Accountability.</p>
     </div>
 
-    <h3>Historical Overview</h3>
+    <h3 id="history">Historical Overview</h3>
     <p>The Office of the Vice President for Administration (OVPA) was created at the 789th meeting of the Board of Regents (BOR) held on 25 November 1969, when the Board approved the reorganization of the central administration of the University. This was the first of a series of reorganization proposals pursuant to the authority granted by the Board of Regents to the President "to make a thorough study of the operations, organizations and structure of the University to enable him to determine the improvements that could be introduced".</p>
     <p>The Vice President for Administration is appointed by the Board on recommendation of the President and is directly responsible to the President for administrative operations. Historically, the office has overseen the following divisions:</p>
     <ul>
@@ -36,7 +36,7 @@ def update_about_page():
         <li>Accounting Division</li>
     </ul>
 
-    <h3>Key Functions & Competencies</h3>
+    <h3 id="functions">Key Functions & Competencies</h3>
     <p>Based on the delegation of authority, the Vice President for Administration has competence over the following areas to support the UP President:</p>
     
     <h4>Human Resource Matters</h4>
@@ -54,7 +54,7 @@ def update_about_page():
         <li>Award of contracts up to Php 3,000,000 for each project.</li>
     </ul>
 
-    <h3>Committees & Support</h3>
+    <h3 id="committees">Committees & Support</h3>
     <p>Coordination and support for the following committees, as authorized or approved by the President:</p>
     
     <h4>UP System Fiscal Policies and Operations Committee (SFPOC)</h4>
@@ -79,7 +79,7 @@ def update_about_page():
         <li><strong>Ad Hoc Committees and Technical Working Groups (TWGs):</strong> Authorized and approved by the President.</li>
     </ul>
 
-    <h3>Coordination & Other Services</h3>
+    <h3 id="coordination">Coordination & Other Services</h3>
     
     <h4>Security, Safety, Peace and Order</h4>
     <ul>
@@ -96,7 +96,7 @@ def update_about_page():
         <li>Support for special events and strategic initiatives; and perform other functions assigned by the President.</li>
     </ul>
 
-    <h3>STRATEGIC GOALS & 10–Point Plan</h3>
+    <h3 id="strategic-goals">STRATEGIC GOALS & 10–Point Plan</h3>
     <p>OVPA is committed to a fully transformed and digitalized administrative system through the following strategic goals:</p>
     
     <h4>Goal 1: Strategic Human Resource Management</h4>

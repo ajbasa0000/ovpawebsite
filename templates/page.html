@@ -4,9 +4,9 @@
 {% block meta_description %}{{ page.meta_description|default:page.title }}{% endblock %}
 
 {% block content %}
-<section class="section" style="background: white; padding-top: 3rem;">
+<section class="section" style="background: white; padding-top: 3rem; padding-bottom: 5rem;">
     <div class="container">
-        <!-- Breadcrumbs (Minimalist & Centered) -->
+        <!-- Breadcrumbs -->
         <nav aria-label="breadcrumb">
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
@@ -15,15 +15,122 @@
         </nav>
 
         <!-- Header Unit -->
-        <div style="text-align: center; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid var(--color-border);">
-            <h1 style="display: inline-block; font-size: clamp(2.5rem, 5vw, 3.5rem); margin: 0; color: var(--color-text-main);">{{ page.title }}</h1>
-            <div style="width: 80px; height: 5px; background: var(--color-maroon-primary); margin: 1.5rem auto 0; border-radius: 5px;"></div>
+        <div style="text-align: center; margin-bottom: 3.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--color-border);">
+            <h1 style="display: inline-block; font-size: clamp(2.2rem, 4.5vw, 3.2rem); margin: 0; color: var(--color-text-main);">{{ page.title }}</h1>
+            <div style="width: 80px; height: 5px; background: var(--color-maroon-primary); margin: 1.25rem auto 0; border-radius: 5px;"></div>
         </div>
         
-        <!-- Simplified Content Layout -->
-        <div class="content-body" style="max-width: 850px; margin: 0 auto; line-height: 2; font-size: 1.15rem; color: var(--color-text-main);">
-            {{ page.content|safe }}
+        <!-- Two-column Layout with Side Navigation -->
+        <div style="display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap;">
+            
+            <!-- Sticky Side Navigation Tab Bar -->
+            <aside id="page-sidebar" style="flex: 0 0 280px; position: sticky; top: 120px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: none;">
+                <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--color-maroon-primary); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; border-bottom: 2px solid #E5E7EB; padding-bottom: 0.5rem;">
+                    <i class="fas fa-list-ul" style="margin-right: 6px;"></i> On This Page
+                </h4>
+                <nav id="page-nav-menu">
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem;" id="nav-tabs-container">
+                        <!-- Dynamically populated by JS or rendered manually -->
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div id="page-main-content" class="content-body" style="flex: 1; min-width: 300px; line-height: 1.95; font-size: 1.1rem; color: var(--color-text-main);">
+                {{ page.content|safe }}
+            </div>
+
         </div>
     </div>
 </section>
+
+<style>
+    /* Side Nav Link Styles */
+    .page-nav-link {
+        display: block;
+        padding: 0.6rem 0.9rem;
+        color: #4B5563;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border-radius: 6px;
+        transition: all 0.2s ease-in-out;
+        border-left: 3px solid transparent;
+    }
+    .page-nav-link:hover {
+        background: #F3F4F6;
+        color: var(--color-maroon-primary);
+    }
+    .page-nav-link.active {
+        background: #FEF2F2;
+        color: var(--color-maroon-primary);
+        font-weight: 700;
+        border-left-color: var(--color-maroon-primary);
+    }
+    
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 130px;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const contentContainer = document.getElementById("page-main-content");
+        const sidebar = document.getElementById("page-sidebar");
+        const navContainer = document.getElementById("nav-tabs-container");
+
+        if (!contentContainer || !sidebar || !navContainer) return;
+
+        // Find all h3 headings in the page content
+        const headings = contentContainer.querySelectorAll("h3");
+
+        if (headings.length > 0) {
+            sidebar.style.display = "block"; // Show sidebar only if headings exist
+
+            headings.forEach((heading, index) => {
+                // Ensure heading has an ID
+                if (!heading.id) {
+                    heading.id = "section-" + (index + 1);
+                }
+
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.href = "#" + heading.id;
+                a.className = "page-nav-link";
+                a.textContent = heading.textContent.trim();
+
+                if (index === 0) a.classList.add("active");
+
+                a.addEventListener("click", function(e) {
+                    document.querySelectorAll(".page-nav-link").forEach(el => el.classList.remove("active"));
+                    this.classList.add("active");
+                });
+
+                li.appendChild(a);
+                navContainer.appendChild(li);
+            });
+
+            // Highlight active side tab on scroll
+            window.addEventListener("scroll", function() {
+                let currentId = "";
+                headings.forEach(heading => {
+                    const top = heading.getBoundingClientRect().top;
+                    if (top <= 160) {
+                        currentId = heading.id;
+                    }
+                });
+
+                if (currentId) {
+                    document.querySelectorAll(".page-nav-link").forEach(link => {
+                        link.classList.remove("active");
+                        if (link.getAttribute("href") === "#" + currentId) {
+                            link.classList.add("active");
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

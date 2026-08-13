@@ -12,11 +12,12 @@ from .models import Page, StaffMember, NewsArticle, Event, Service, Issuance, Do
 @login_required
 @content_manager_required
 def dashboard_home(request):
+    from .models import AdvisoryTicker
     stats = {
         'pages': Page.objects.count(),
         'staff': StaffMember.objects.count(),
         'news': NewsArticle.objects.count(),
-        'services': Service.objects.count(),
+        'advisories': AdvisoryTicker.objects.count(),
     }
     recent_pages = Page.objects.order_by('-updated_at')[:5]
     recent_staff = StaffMember.objects.order_by('-updated_at')[:5]
@@ -34,10 +35,12 @@ def get_module_config(model_name):
     """
     Returns the model and its configuration for the dashboard.
     """
+    from .models import AdvisoryTicker
     model_map = {
         'pages': (Page, ['title', 'slug', 'status', 'updated_at']),
         'staff': (StaffMember, ['name', 'position', 'unit', 'is_active']),
         'news': (NewsArticle, ['title', 'published_date', 'status']),
+        'advisories': (AdvisoryTicker, ['text', 'category', 'is_active', 'status']),
         'events': (Event, ['title', 'start_datetime', 'event_type', 'status']),
         'services': (Service, ['title', 'service_category', 'display_order', 'status']),
         'issuances': (Issuance, ['issuance_number', 'title', 'issuance_type', 'status']),
