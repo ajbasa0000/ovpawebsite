@@ -36,6 +36,9 @@ urlpatterns = [
     
     # Office Structure & Sub-Offices
     path('office/', views.office_structure, name='office_structure'),
+    path('office/cash-office/', views.cash_office_landing, name='cash_office_landing'),
+    path('office/cash-office/search/', views.cash_office_check_search, name='cash_office_check_search'),
+    path('office/cash-office/verify-pin/', views.cash_office_verify_pin, name='cash_office_verify_pin'),
     path('office/<slug:office_code>/', views.office_detail, name='office_detail'),
     
     # Hub Views

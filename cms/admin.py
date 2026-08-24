@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Page, OfficeStructure, PartnerOffice, Service,
     Issuance, NewsArticle, Event, Document,
-    ContactInquiry, Feedback, MediaGallery, Project, ProjectImage, StaffMember, AdvisoryTicker
+    ContactInquiry, Feedback, MediaGallery, Project, ProjectImage, StaffMember, AdvisoryTicker, ClaimableCheck, CashOfficePage
 )
 
 
@@ -338,3 +338,56 @@ class AdvisoryTickerAdmin(BaseAdmin):
     search_fields = ['text', 'link_url']
     list_editable = ['is_active', 'display_order']
     readonly_fields = ['created_at', 'updated_at', 'created_by']
+
+
+@admin.register(ClaimableCheck)
+class ClaimableCheckAdmin(BaseAdmin):
+    list_display = ['payee_name', 'voucher_number', 'check_number', 'amount', 'pin_code', 'check_date', 'claim_status', 'date_released']
+    list_filter = ['claim_status', 'status', 'check_date']
+    search_fields = ['payee_name', 'voucher_number', 'check_number', 'pin_code', 'remarks']
+    readonly_fields = ['created_at', 'updated_at', 'created_by']
+    fieldsets = (
+        ('Supplier & Voucher Details', {
+            'fields': ('payee_name', 'voucher_number', 'check_number', 'amount', 'check_date', 'pin_code')
+        }),
+        ('Status & Release Info', {
+            'fields': ('claim_status', 'date_released', 'claiming_requirements', 'remarks')
+        }),
+        ('Publishing & Metadata', {
+            'fields': ('status', 'created_by', 'created_at', 'updated_at')
+        }),
+    )
+
+
+@admin.register(CashOfficePage)
+class CashOfficePageAdmin(BaseAdmin):
+    list_display = ['hero_title', 'cashier_hours', 'office_location', 'contact_email', 'status', 'updated_at']
+    readonly_fields = ['created_at', 'updated_at', 'created_by']
+    fieldsets = (
+        ('Hero & Banner Section', {
+            'fields': ('hero_title', 'hero_subtitle')
+        }),
+        ('Office Contact, VOIP & Hours', {
+            'fields': ('cashier_hours', 'office_location', 'releasing_phone', 'voip_extensions', 'contact_email')
+        }),
+        ('BOR History & Office Mandate', {
+            'fields': ('mandate_title', 'mandate_content', 'bor_history_title', 'bor_history_content')
+        }),
+        ("Citizen's Charter & Service Guarantees", {
+            'fields': ('citizens_charter_summary',)
+        }),
+        ('ISO Process Flows (RDA, Check, Collections)', {
+            'fields': ('rda_process_flow', 'check_process_flow', 'receivable_process_flow')
+        }),
+        ('Cashiering Service Windows (1-4)', {
+            'fields': ('window_1_desc', 'window_2_desc', 'window_3_desc', 'window_4_desc')
+        }),
+        ('Releasing Guidelines & Requirements', {
+            'fields': ('claiming_guidelines',)
+        }),
+        ('Publishing & Status', {
+            'fields': ('status', 'created_by', 'created_at', 'updated_at')
+        }),
+    )
+
+

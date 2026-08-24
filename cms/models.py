@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.utils.text import slugify
 from django.conf import settings
@@ -503,3 +504,124 @@ class AdvisoryTicker(BaseModel):
 
     def __str__(self):
         return f"[{self.get_category_display()}] {self.text[:50]}"
+
+
+class ClaimableCheck(BaseModel):
+    """
+    Model for System Cash Office claimable checks and disbursement status tracking for suppliers and payees.
+    """
+    CLAIM_STATUS_CHOICES = [
+        ('ready', 'Ready for Pick-up / Release'),
+        ('processing', 'Processing / In Audit'),
+        ('released', 'Released / Claimed'),
+        ('cancelled', 'Stale / Cancelled'),
+    ]
+
+    payee_name = models.CharField(max_length=255, db_index=True, help_text="Supplier, Company, or Individual Payee Name")
+    voucher_number = models.CharField(max_length=100, db_index=True, help_text="Disbursement Voucher (DV) Number")
+    check_number = models.CharField(max_length=100, blank=True, null=True, help_text="Check or ADA Reference Number")
+    amount = models.DecimalField(max_digits=12, decimal_places=2, help_text="Amount in PHP")
+    check_date = models.DateField(help_text="Date of Check / Voucher")
+    claim_status = models.CharField(max_length=20, choices=CLAIM_STATUS_CHOICES, default='ready')
+    date_released = models.DateField(blank=True, null=True, help_text="Date when check was claimed/released")
+    claiming_requirements = models.TextField(
+        default="1. Official Receipt / Sales Invoice\n2. Two (2) Valid Government-issued IDs\n3. Authorization Letter or SPA (if representative)",
+        help_text="Mandatory documents required upon claiming"
+    )
+    remarks = models.TextField(blank=True, null=True, help_text="Notes for supplier or releasing cashier")
+    pin_code = models.CharField(
+        max_length=10,
+        blank=True,
+        help_text="6-digit security PIN for supplier authorization to unlock check amount and details."
+    )
+
+    class Meta:
+        verbose_name = 'Claimable Check'
+        verbose_name_plural = 'Claimable Checks'
+        ordering = ['-check_date', 'payee_name']
+
+    def save(self, *args, **kwargs):
+        if not self.pin_code:
+            self.pin_code = str(random.randint(100000, 999999))
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.payee_name} - DV #{self.voucher_number} ({self.get_claim_status_display()})"
+
+
+class CashOfficePage(BaseModel):
+    """
+    Model for managing and customizing the public System Cash Office (SCO) landing page content via CMD.
+    """
+    hero_title = models.CharField(max_length=200, default="System Cash Office (SCO)")
+    hero_subtitle = models.TextField(
+        default="Managing financial collections, cash disbursements, electronic payment processing, and supplier check releases across the University of the Philippines System."
+    )
+    cashier_hours = models.CharField(max_length=150, default="Mon - Fri: 8:00 AM - 4:00 PM")
+    office_location = models.CharField(max_length=200, default="SFAB Building, Magsaysay rd. cor Agoncillo, UP Diliman Campus, Quezon City")
+    releasing_phone = models.CharField(max_length=150, default="(02) 8981-8500 loc. 2524 / 2525")
+    contact_email = models.EmailField(default="cashoffice.system@up.edu.ph")
+    
+    mandate_title = models.CharField(max_length=200, default="Fiscal Responsibility & Cashiering Excellence")
+    mandate_content = RichTextField(
+        default="The System Cash Office (SCO) operates under the direct supervision of the Office of the Vice President for Administration. It safeguards University monetary assets, enforces strict treasury governance according to Commission on Audit (COA) standards, and maintains transparent, accessible payment systems for suppliers, personnel, and students."
+    )
+    
+    window_1_desc = models.TextField(
+        default="Tuition fees, transcript fees, administrative clearances, dorm payments, and general university receipts.",
+        help_text="Window 1: Official Collections"
+    )
+    window_2_desc = models.TextField(
+        default="Disbursement checks and ADA notices for suppliers, contractors, and corporate vendors.",
+        help_text="Window 2: Supplier Check Releasing"
+    )
+    window_3_desc = models.TextField(
+        default="Faculty & staff payroll checks, overload honoraria, research stipends, and student assistant allowances.",
+        help_text="Window 3: Payroll & Honoraria"
+    )
+    window_4_desc = models.TextField(
+        default="Official travel cash advances, project fund liquidations, and petty cash replenishings.",
+        help_text="Window 4: Special Cash Advances"
+    )
+    
+    claiming_guidelines = RichTextField(
+        default="To ensure smooth verification and prevent authorization delays, please bring mandatory documents (Official Receipt, 2 Valid IDs, SPA) when claiming at Window 2."
+    )
+
+    voip_extensions = models.CharField(max_length=200, default="VOIP: 2618 / 2540 / 2524 / 2525")
+    
+    bor_history_title = models.CharField(max_length=200, default="BOR Executive Creation & NGAS Governance")
+    bor_history_content = RichTextField(
+        default="<p>The UP-System Cash Office (SCO) was formally created at the <strong>1144th Meeting of the Board of Regents (BOR) on 31 August 2000</strong> via Executive Order, becoming operational on May 5, 2001. Guided by the New Government Accounting System (NGAS) and Commission on Audit (COA) standards under the Office of the Vice President for Administration (OVPA), SCO manages financial disbursements, electronic transfers, and official collections across all UP System offices and Constituent Universities (CUs).</p>"
+    )
+    
+    citizens_charter_summary = RichTextField(
+        default="<p>Under the UP System Citizen's Charter, SCO operates from <strong>Monday to Friday, 8:00 AM to 5:00 PM (No Noon Break)</strong> with standard service targets:</p><ul><li><strong>Official Collections & OR Issuance</strong>: 8 Minutes Target Turnaround</li><li><strong>Check & RDA Release</strong>: 10 Minutes Target Turnaround</li></ul>"
+    )
+    
+    rda_process_flow = RichTextField(
+        default="<ol><li><strong>DV Receipt & Verification</strong>: Receive approved DVs from System Accounting Office (UPSAO).</li><li><strong>WeAccess Encoding</strong>: Review name, bank account number, amount, and fund code. Encode into Landbank WeAccess.</li><li><strong>SCO Chief Review</strong>: Verify accuracy and counter-sign.</li><li><strong>VPA Executive Approval</strong>: Forward to Vice President for Administration for final signature and digital bank dispatch.</li></ol>"
+    )
+    
+    check_process_flow = RichTextField(
+        default="<ol><li><strong>DV Review & Check Preparation</strong>: Audit DVs for fund code, payee name, and approved supporting documents.</li><li><strong>Check Printing & Signing</strong>: Print check and register in Check Register. Counter-signed by SCO Chief and VPA.</li><li><strong>Vault Safekeeping</strong>: Store securely in Cashier Vault pending release.</li><li><strong>Window 2 Release</strong>: Release to Payee/Authorized Representative upon receipt of BIR OR/Sales Invoice and 2 valid IDs.</li></ol>"
+    )
+
+    receivable_process_flow = RichTextField(
+        default="<ol><li><strong>Order of Payment</strong>: Client presents Order of Payment from issuing unit.</li><li><strong>Payment Remittance & Verification</strong>: Cashier validates documents and receives payment (cash, check, or bank transfer).</li><li><strong>OR Issuance & Daily Deposit</strong>: Issue Official Receipt (OR) in 5 minutes and deposit collections daily to authorized government depository bank.</li></ol>"
+    )
+
+    class Meta:
+        verbose_name = 'Cash Office Page Content'
+        verbose_name_plural = 'Cash Office Page Content'
+
+    def __str__(self):
+        return f"Cash Office Page Content ({self.get_status_display()})"
+
+    @classmethod
+    def get_solo(cls):
+        obj, created = cls.objects.get_or_create(id=1)
+        return obj
+
+
+

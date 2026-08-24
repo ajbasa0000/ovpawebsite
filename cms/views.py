@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import (
     Page, NewsArticle, Event, Service, Issuance,
-    Document, OfficeStructure, PartnerOffice, MediaGallery, Project, StaffMember
+    Document, OfficeStructure, PartnerOffice, MediaGallery, Project, StaffMember, ClaimableCheck, CashOfficePage
 )
 from .forms import ContactInquiryForm, FeedbackForm
 from django.shortcuts import get_object_or_404
@@ -262,14 +262,142 @@ def office_detail(request, office_code):
     """
     Detailed view for sub-offices (SSPMO, SHRDO, SCO).
     """
-    # Assuming we might want to vary content eventually, for now using slugs or titles
+    if office_code.lower() in ('sco', 'cash-office', 'cash_office'):
+        return cash_office_landing(request)
+
     office_map = {
         'sspmo': 'System Supply and Property Management Office',
         'shrdo': 'System Human Resources Development Office',
-        'sco': 'System Cash Office'
     }
     title = office_map.get(office_code.lower(), 'Office Detail')
     return render(request, 'cms/office_detail.html', {'title': title, 'office_code': office_code})
+
+
+def cash_office_landing(request):
+    """
+    Dedicated landing page for the System Cash Office (SCO) featuring supplier check status lookup.
+    """
+    query = request.GET.get('q', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    
+    sco_page = CashOfficePage.get_solo()
+    all_published = ClaimableCheck.objects.filter(status='published')
+    
+    searched_checks = None
+    if query or status_filter:
+        searched_checks = all_published
+        if query:
+            searched_checks = searched_checks.filter(
+                models.Q(payee_name__icontains=query) |
+                models.Q(voucher_number__icontains=query) |
+                models.Q(check_number__icontains=query)
+            )
+        if status_filter:
+            searched_checks = searched_checks.filter(claim_status=status_filter)
+        searched_checks = searched_checks.order_by('-check_date')[:50]
+        
+    recent_ready_checks = all_published.filter(claim_status='ready').order_by('-check_date')[:8]
+    
+    stats_summary = {
+        'ready_count': all_published.filter(claim_status='ready').count(),
+        'processing_count': all_published.filter(claim_status='processing').count(),
+        'released_count': all_published.filter(claim_status='released').count(),
+    }
+    
+    context = {
+        'title': sco_page.hero_title or 'System Cash Office',
+        'sco_page': sco_page,
+        'query': query,
+        'status_filter': status_filter,
+        'searched_checks': searched_checks,
+        'recent_ready_checks': recent_ready_checks,
+        'stats_summary': stats_summary,
+    }
+    return render(request, 'cms/cash_office.html', context)
+
+
+def cash_office_check_search(request):
+    """
+    JSON API endpoint for real-time supplier check lookup.
+    """
+    from django.http import JsonResponse
+    query = request.GET.get('q', '').strip()
+    if not query or len(query) < 2:
+        return JsonResponse({'results': [], 'message': 'Please enter at least 2 characters to search.'})
+        
+    checks = ClaimableCheck.objects.filter(
+        status='published'
+    ).filter(
+        models.Q(payee_name__icontains=query) |
+        models.Q(voucher_number__icontains=query) |
+        models.Q(check_number__icontains=query)
+    ).order_by('-check_date')[:25]
+    
+    results = []
+    for c in checks:
+        results.append({
+            'id': c.id,
+            'payee_name': c.payee_name,
+            'voucher_number': c.voucher_number,
+            'check_number': c.check_number or 'Pending',
+            'amount': '₱ ••••••••',
+            'check_date': c.check_date.strftime('%B %d, %Y') if c.check_date else '',
+            'claim_status': c.claim_status,
+            'claim_status_display': c.get_claim_status_display(),
+            'date_released': c.date_released.strftime('%B %d, %Y') if c.date_released else None,
+            'claiming_requirements': 'Protected by Security PIN',
+            'remarks': '',
+        })
+        
+    return JsonResponse({'results': results, 'count': len(results)})
+
+
+def cash_office_verify_pin(request):
+    """
+    JSON API endpoint to verify supplier PIN code and return unlocked check details.
+    """
+    from django.http import JsonResponse
+    import json
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            check_id = data.get('check_id')
+            input_pin = str(data.get('pin_code', '')).strip()
+        except Exception:
+            check_id = request.POST.get('check_id')
+            input_pin = str(request.POST.get('pin_code', '')).strip()
+    else:
+        check_id = request.GET.get('check_id')
+        input_pin = str(request.GET.get('pin_code', '')).strip()
+
+    if not check_id or not input_pin:
+        return JsonResponse({'success': False, 'message': 'Check ID and 6-digit PIN are required.'}, status=400)
+
+    try:
+        check = ClaimableCheck.objects.get(pk=check_id, status='published')
+    except ClaimableCheck.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Check record not found.'}, status=404)
+
+    if str(check.pin_code).strip() != input_pin:
+        return JsonResponse({'success': False, 'message': 'Incorrect Security PIN. Please check your 6-digit access code or contact the Cash Office.'}, status=403)
+
+    return JsonResponse({
+        'success': True,
+        'data': {
+            'id': check.id,
+            'payee_name': check.payee_name,
+            'voucher_number': check.voucher_number,
+            'check_number': check.check_number or 'Pending Assignment',
+            'amount': f"₱{check.amount:,.2f}",
+            'check_date': check.check_date.strftime('%B %d, %Y') if check.check_date else '',
+            'claim_status': check.claim_status,
+            'claim_status_display': check.get_claim_status_display(),
+            'date_released': check.date_released.strftime('%B %d, %Y') if check.date_released else 'Not yet released',
+            'claiming_requirements': check.claiming_requirements,
+            'remarks': check.remarks or 'None',
+        }
+    })
 
 
 def careers_view(request):

@@ -3,6 +3,7 @@ from . import dashboard_views
 
 urlpatterns = [
     path('', dashboard_views.dashboard_home, name='dashboard_home'),
+    path('pages/', dashboard_views.page_manager_hub, name='page_manager_hub'),
     
     # Generic Module Management
     path('m/<str:model_name>/', dashboard_views.module_list, name='module_list'),

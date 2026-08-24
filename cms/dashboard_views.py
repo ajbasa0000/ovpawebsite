@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.apps import apps
 from django import forms
 from .decorators import content_manager_required
-from .models import Page, StaffMember, NewsArticle, Event, Service, Issuance, Document, PartnerOffice, MediaGallery, Project, Feedback, ContactInquiry
+from .models import Page, StaffMember, NewsArticle, Event, Service, Issuance, Document, PartnerOffice, MediaGallery, Project, Feedback, ContactInquiry, ClaimableCheck, CashOfficePage
 
 # --- Dashboard Home ---
 
@@ -18,6 +19,7 @@ def dashboard_home(request):
         'staff': StaffMember.objects.count(),
         'news': NewsArticle.objects.count(),
         'advisories': AdvisoryTicker.objects.count(),
+        'checks': ClaimableCheck.objects.count(),
     }
     recent_pages = Page.objects.order_by('-updated_at')[:5]
     recent_staff = StaffMember.objects.order_by('-updated_at')[:5]
@@ -50,6 +52,8 @@ def get_module_config(model_name):
         'projects': (Project, ['title', 'category', 'status']),
         'inquiries': (ContactInquiry, ['name', 'subject', 'is_resolved', 'created_at']),
         'feedback': (Feedback, ['name', 'rating', 'is_reviewed', 'created_at']),
+        'claimable_checks': (ClaimableCheck, ['payee_name', 'voucher_number', 'check_number', 'amount', 'pin_code', 'claim_status', 'status']),
+        'cash_office_page': (CashOfficePage, ['hero_title', 'cashier_hours', 'office_location', 'contact_email', 'status']),
     }
     return model_map.get(model_name.lower())
 
@@ -180,3 +184,154 @@ def restore_item(request, model_class, pk):
     item.restore()
     messages.success(request, f"Item restored successfully.")
     return redirect('recycle_bin')
+
+
+# --- Centralized Categorized Page Manager Hub ---
+
+@login_required
+@content_manager_required
+def page_manager_hub(request):
+    """
+    Centralized Categorized Page Manager Hub in CMD grouping dynamic pages, office portals, and resource hubs.
+    """
+    ovpa_pages = Page.objects.all().order_by('title')
+    sco_page = CashOfficePage.get_solo()
+    
+    categories = [
+        {
+            'id': 'ovpa_core',
+            'name': 'OVPA Core Pages',
+            'icon': 'fa-building-columns',
+            'badge_color': '#7b1113',
+            'description': 'Standard dynamic content pages (About Us, Quality Policy, Mandate, Careers, etc.)',
+            'pages': [
+                {
+                    'title': page.title,
+                    'type': 'Dynamic Page',
+                    'slug': page.slug,
+                    'status': page.status,
+                    'updated_at': page.updated_at,
+                    'edit_url': reverse('module_edit', kwargs={'model_name': 'pages', 'pk': page.pk}),
+                    'delete_url': reverse('module_delete', kwargs={'model_name': 'pages', 'pk': page.pk}),
+                    'public_url': f"/page/{page.slug}/",
+                } for page in ovpa_pages
+            ]
+        },
+        {
+            'id': 'office_units',
+            'name': 'Constituent & Office Portals',
+            'icon': 'fa-landmark-flag',
+            'badge_color': '#0284c7',
+            'description': 'Specialized landing pages and portals for system offices and constituent units',
+            'pages': [
+                {
+                    'title': 'System Cash Office (SCO) Landing Page',
+                    'type': 'Structured Office Portal',
+                    'slug': 'cash-office',
+                    'status': sco_page.status if hasattr(sco_page, 'status') else 'published',
+                    'updated_at': sco_page.updated_at if hasattr(sco_page, 'updated_at') else None,
+                    'edit_url': reverse('module_edit', kwargs={'model_name': 'cash_office_page', 'pk': sco_page.pk}),
+                    'delete_url': None,
+                    'public_url': '/office/cash-office/',
+                },
+                {
+                    'title': 'Constituent Offices Directory',
+                    'type': 'Directory Page',
+                    'slug': 'office',
+                    'status': 'published',
+                    'updated_at': None,
+                    'edit_url': reverse('module_list', kwargs={'model_name': 'partners'}),
+                    'delete_url': None,
+                    'public_url': '/office/',
+                },
+            ]
+        },
+        {
+            'id': 'institutional_portals',
+            'name': 'Institutional Portals',
+            'icon': 'fa-layer-group',
+            'badge_color': '#059669',
+            'description': 'Operational listing directories for projects, staff, services, and partnerships',
+            'pages': [
+                {
+                    'title': 'Major Projects & Programs Directory',
+                    'type': 'Listing Portal',
+                    'slug': 'projects',
+                    'status': 'published',
+                    'updated_at': None,
+                    'edit_url': reverse('module_list', kwargs={'model_name': 'projects'}),
+                    'delete_url': None,
+                    'public_url': '/projects/',
+                },
+                {
+                    'title': 'OVPA Staff Directory',
+                    'type': 'Directory Portal',
+                    'slug': 'staff',
+                    'status': 'published',
+                    'updated_at': None,
+                    'edit_url': reverse('module_list', kwargs={'model_name': 'staff'}),
+                    'delete_url': None,
+                    'public_url': '/staff/',
+                },
+                {
+                    'title': 'Programs & Services Directory',
+                    'type': 'Directory Portal',
+                    'slug': 'programs',
+                    'status': 'published',
+                    'updated_at': None,
+                    'edit_url': reverse('module_list', kwargs={'model_name': 'services'}),
+                    'delete_url': None,
+                    'public_url': '/programs/',
+                },
+            ]
+        },
+        {
+            'id': 'resource_hubs',
+            'name': 'Resource & Media Hubs',
+            'icon': 'fa-folder-open',
+            'badge_color': '#d97706',
+            'description': 'Public document downloads, official issuances, advisories, and media galleries',
+            'pages': [
+                {
+                    'title': 'Document & Policy Downloads Hub',
+                    'type': 'Resource Hub',
+                    'slug': 'documents',
+                    'status': 'published',
+                    'updated_at': None,
+                    'edit_url': reverse('module_list', kwargs={'model_name': 'documents'}),
+                    'delete_url': None,
+                    'public_url': '/resources/documents/',
+                },
+                {
+                    'title': 'Official Issuances Center',
+                    'type': 'Resource Hub',
+                    'slug': 'issuances',
+                    'status': 'published',
+                    'updated_at': None,
+                    'edit_url': reverse('module_list', kwargs={'model_name': 'issuances'}),
+                    'delete_url': None,
+                    'public_url': '/resources/issuances/',
+                },
+                {
+                    'title': 'OVPA Media Gallery',
+                    'type': 'Media Hub',
+                    'slug': 'media',
+                    'status': 'published',
+                    'updated_at': None,
+                    'edit_url': reverse('module_list', kwargs={'model_name': 'gallery'}),
+                    'delete_url': None,
+                    'public_url': '/media/',
+                },
+            ]
+        }
+    ]
+    
+    total_pages_count = sum(len(cat['pages']) for cat in categories)
+    
+    context = {
+        'categories': categories,
+        'total_pages_count': total_pages_count,
+        'ovpa_pages_count': len(ovpa_pages),
+    }
+    return render(request, 'dashboard/page_manager.html', context)
+

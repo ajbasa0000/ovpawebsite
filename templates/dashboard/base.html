@@ -29,9 +29,9 @@
                 <i class="fa-solid fa-gauge"></i> Dashboard
             </a>
             
-            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Publications & Advisories</div>
-            <a href="{% url 'module_list' 'pages' %}" class="dash-nav-item {% if 'pages' in request.path %}active{% endif %}">
-                <i class="fa-solid fa-file-lines"></i> Page Manager
+            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Content & Pages</div>
+            <a href="{% url 'page_manager_hub' %}" class="dash-nav-item {% if 'pages' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-folder-tree"></i> Page Manager Hub
             </a>
             <a href="{% url 'module_list' 'advisories' %}" class="dash-nav-item {% if 'advisories' in request.path %}active{% endif %}">
                 <i class="fa-solid fa-bullhorn"></i> Advisory Ticker Bar
@@ -63,6 +63,14 @@
             </a>
             <a href="{% url 'module_list' 'issuances' %}" class="dash-nav-item {% if 'issuances' in request.path %}active{% endif %}">
                 <i class="fa-solid fa-stamp"></i> Official Issuances
+            </a>
+
+            <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Cash Office & Finance</div>
+            <a href="{% url 'module_list' 'cash_office_page' %}" class="dash-nav-item {% if 'cash_office_page' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-pen-to-square"></i> Cash Office Page Editor
+            </a>
+            <a href="{% url 'module_list' 'claimable_checks' %}" class="dash-nav-item {% if 'claimable_checks' in request.path %}active{% endif %}">
+                <i class="fa-solid fa-money-check-dollar"></i> Claimable Checks
             </a>
 
             <div style="padding: 1.5rem 2rem 0.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Communication & Media</div>
