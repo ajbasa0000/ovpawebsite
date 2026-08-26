@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import paramiko
+import io
 
 HOSTNAME = '172.20.7.172'
 PORT = 21712
@@ -14,13 +15,16 @@ REMOTE_DIR = '/var/www/ovpa_website'
 def log(msg):
     try:
         print(f"[MIRROR] {msg}")
-    except UnicodeEncodeError:
+    except Exception:
         sys.stdout.buffer.write(f"[MIRROR] {msg}\n".encode('ascii', errors='replace'))
         sys.stdout.flush()
 
 def run_local(cmd):
     log(f"Running locally: {cmd}")
-    res = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=LOCAL_DIR)
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
+    res = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=LOCAL_DIR, env=env, encoding='utf-8')
     if res.stdout:
         log(res.stdout.strip())
     if res.stderr and res.returncode != 0:
@@ -45,15 +49,23 @@ def sync_media_files(sftp, local_dir, remote_dir):
                 pass
 
 def dump_and_sync_database(client, sftp):
-    log("Exporting local database content fixtures...")
-    dump_cmd = "python manage.py dumpdata cms accounts auth.group --natural-foreign --natural-primary --indent 2 -o local_data_dump.json"
-    run_local(dump_cmd)
-    
+    log("Exporting local database content fixtures in UTF-8...")
     local_dump_file = os.path.join(LOCAL_DIR, 'local_data_dump.json')
     remote_dump_file = f"{REMOTE_DIR}/local_data_dump.json"
     
+    # Python script to dumpdata cleanly with UTF-8 encoding
+    dump_script = """import os, sys, django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ovpa_website.settings')
+django.setup()
+from django.core.management import call_command
+with open('local_data_dump.json', 'w', encoding='utf-8') as f:
+    call_command('dumpdata', 'cms', 'accounts', 'auth.group', natural_foreign=True, natural_primary=True, indent=2, stdout=f)
+print('DUMP_SUCCESS')
+"""
+    subprocess.run([sys.executable, "-c", dump_script], cwd=LOCAL_DIR)
+    
     if os.path.exists(local_dump_file):
-        log("Uploading fixtures to staging server...")
+        log("Uploading database fixtures to staging server...")
         sftp.put(local_dump_file, remote_dump_file)
         
         log("Loading fixtures into staging PostgreSQL...")
