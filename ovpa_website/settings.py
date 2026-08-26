@@ -30,6 +30,20 @@ for host in ['ovpa-dev.up.edu.ph', 'dev-ovpawebsite.up.edu.ph', '172.20.7.172', 
     if host not in ALLOWED_HOSTS and '*' not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(host)
 
+# CSRF Trusted Origins for Staging and Production
+CSRF_TRUSTED_ORIGINS = [
+    'http://ovpa-dev.up.edu.ph',
+    'https://ovpa-dev.up.edu.ph',
+    'http://dev-ovpawebsite.up.edu.ph',
+    'https://dev-ovpawebsite.up.edu.ph',
+    'http://172.20.7.172',
+    'http://localhost:4000',
+    'http://127.0.0.1:4000',
+]
+_raw_csrf = config('CSRF_TRUSTED_ORIGINS', default='')
+if _raw_csrf:
+    CSRF_TRUSTED_ORIGINS.extend([origin.strip() for origin in _raw_csrf.split(',') if origin.strip()])
+
 
 
 # Application definition
