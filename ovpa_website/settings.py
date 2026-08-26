@@ -151,9 +151,15 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# WhiteNoise configuration for production static files
-# Use CompressedStaticFilesStorage so missing manifest entries don't crash Django
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# Storage configuration for Django 5.0+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 
 # CKEditor Configuration
