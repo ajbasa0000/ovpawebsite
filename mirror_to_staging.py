@@ -30,6 +30,17 @@ def run_local(cmd):
         log(f"ERROR: {res.stderr.strip()}")
     return res.returncode == 0
 
+def run_remote_step(client, cmd_desc, command):
+    log(f"--> {cmd_desc}...")
+    full_cmd = f"echo '{SSH_PASS}' | sudo -S bash -c \"{command}\""
+    stdin, stdout, stderr = client.exec_command(full_cmd)
+    out = stdout.read().decode('ascii', errors='replace').strip()
+    err = stderr.read().decode('ascii', errors='replace').strip()
+    if out:
+        log(f"    {out}")
+    if err and "[sudo]" not in err and "WARNING" not in err:
+        log(f"    [ERR] {err}")
+
 def sync_media_files(sftp, local_dir, remote_dir):
     try:
         sftp.mkdir(remote_dir)
@@ -66,16 +77,13 @@ print('DUMP_SUCCESS')
         log("Uploading database fixtures to staging server...")
         sftp.put(local_dump_file, remote_dump_file)
         
-        log("Loading fixtures into staging PostgreSQL...")
         load_script = f"""
 cd {REMOTE_DIR}
 source venv/bin/activate
 python manage.py loaddata local_data_dump.json || true
 rm -f local_data_dump.json
 """
-        stdin, stdout, stderr = client.exec_command(f"echo '{SSH_PASS}' | sudo -S bash -c \"{load_script}\"")
-        out = stdout.read().decode('ascii', errors='replace')
-        log(out)
+        run_remote_step(client, "Loading database fixtures into PostgreSQL", load_script)
         
         try:
             os.remove(local_dump_file)
@@ -110,39 +118,17 @@ def main():
         sync_media_files(sftp, local_media, f"{REMOTE_DIR}/media")
 
     # 4. Force Reset Git to Origin/Master & Run Migrations & Collect Static
-    remote_script = f"""
-set -e
-cd {REMOTE_DIR}
-echo "--> Force syncing repository with origin/master..."
-git fetch origin master
-git reset --hard origin/master
-
-echo "--> Applying database migrations..."
-source venv/bin/activate
-python manage.py migrate
-
-echo "--> Collecting static files..."
-python manage.py collectstatic --noinput
-
-echo "--> Setting permissions..."
-chown -R {SSH_USER}:www-data {REMOTE_DIR}/media {REMOTE_DIR}/logs
-chmod -R 775 {REMOTE_DIR}/media {REMOTE_DIR}/logs
-
-echo "--> Restarting Gunicorn & Nginx..."
-systemctl restart ovpa_website
-systemctl reload nginx
-"""
-    cmd = f"echo '{SSH_PASS}' | sudo -S bash -c \"{remote_script}\""
-    stdin, stdout, stderr = client.exec_command(cmd)
-    for line in stdout:
-        log(line.strip())
+    run_remote_step(client, "Force-syncing code with origin/master", f"cd {REMOTE_DIR} && git fetch origin master && git reset --hard origin/master")
+    run_remote_step(client, "Applying database migrations", f"cd {REMOTE_DIR} && source venv/bin/activate && python manage.py migrate")
+    run_remote_step(client, "Collecting static files", f"cd {REMOTE_DIR} && source venv/bin/activate && python manage.py collectstatic --noinput")
+    run_remote_step(client, "Setting directory permissions", f"chown -R {SSH_USER}:www-data {REMOTE_DIR}/media {REMOTE_DIR}/logs && chmod -R 775 {REMOTE_DIR}/media {REMOTE_DIR}/logs")
 
     # 5. Database Data Parity Sync
     dump_and_sync_database(client, sftp)
     sftp.close()
 
-    # 6. Ensure grootadmin exists with password
-    ensure_groot = f"""
+    # 6. Ensure grootadmin exists and restart Gunicorn
+    ensure_and_restart = f"""
 cd {REMOTE_DIR}
 source venv/bin/activate
 python -c "
@@ -162,7 +148,7 @@ groot.save()
 systemctl restart ovpa_website
 systemctl reload nginx
 """
-    client.exec_command(f"echo '{SSH_PASS}' | sudo -S bash -c \"{ensure_groot}\"")
+    run_remote_step(client, "Verifying superuser & reloading Gunicorn/Nginx", ensure_and_restart)
     client.close()
 
     log("=" * 60)
