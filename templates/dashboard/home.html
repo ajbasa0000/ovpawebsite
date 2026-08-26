@@ -9,31 +9,31 @@
 <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
     <div class="stat-card">
         <div class="stat-title">Active Pages</div>
-        <div class="stat-value">{{ stats.pages|default:stats.total_pages|default:0 }}</div>
+        <div class="stat-value">{{ stats.pages }}</div>
         <p style="font-size: 0.8rem; color: #10b981;"><i class="fa-solid fa-arrow-up"></i> Institutional Pillars</p>
     </div>
     
     <div class="stat-card">
         <div class="stat-title">Staff Directory</div>
-        <div class="stat-value">{{ stats.staff|default:stats.total_staff|default:0 }}</div>
+        <div class="stat-value">{{ stats.staff }}</div>
         <p style="font-size: 0.8rem; color: #6366f1;"><i class="fa-solid fa-user-tie"></i> Executive & Admin</p>
     </div>
     
     <div class="stat-card">
         <div class="stat-title">News & Advisories</div>
-        <div class="stat-value">{{ stats.news|default:stats.total_news|default:0 }}</div>
+        <div class="stat-value">{{ stats.news }}</div>
         <p style="font-size: 0.8rem; color: #f59e0b;"><i class="fa-solid fa-newspaper"></i> Recent Updates</p>
     </div>
 
     <div class="stat-card">
         <div class="stat-title">Claimable Checks</div>
-        <div class="stat-value">{{ stats.checks|default:0 }}</div>
+        <div class="stat-value">{{ stats.checks }}</div>
         <p style="font-size: 0.8rem; color: #059669;"><i class="fa-solid fa-money-check-dollar"></i> <a href="{% url 'module_list' 'claimable_checks' %}" style="color: #059669; text-decoration: none;">Cash Office Module</a></p>
     </div>
 
     <div class="stat-card">
         <div class="stat-title">Advisory Ticker Bar</div>
-        <div class="stat-value">{{ stats.advisories|default:0 }}</div>
+        <div class="stat-value">{{ stats.advisories }}</div>
         <p style="font-size: 0.8rem; color: #8b5cf6;"><i class="fa-solid fa-bullhorn"></i> <a href="{% url 'module_list' 'advisories' %}" style="color: #8b5cf6; text-decoration: none;">Top Marquee</a></p>
     </div>
 </div>
