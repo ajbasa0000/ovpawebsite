@@ -14,8 +14,9 @@ from django.shortcuts import get_object_or_404
 
 def homepage(request):
     """
-    Homepage view with featured content.
+    Homepage view with comprehensive featured sections.
     """
+    from .models import Service, PartnerOffice
     context = {
         'featured_news': NewsArticle.objects.filter(
             status='published',
@@ -27,6 +28,13 @@ def homepage(request):
         'latest_issuances': Issuance.objects.filter(
             status='published'
         ).order_by('-issuance_date')[:5],
+        'featured_services': Service.objects.filter(
+            status='published'
+        ).order_by('display_order', 'title')[:6],
+        'partner_offices': PartnerOffice.objects.filter(
+            status='published',
+            is_active=True
+        ).order_by('name')[:6],
     }
     return render(request, 'index.html', context)
 
