@@ -15,10 +15,10 @@ class SecurityHeadersMiddleware:
 
         # 2. Content-Security-Policy (CSP)
         # Protects against XSS, clickjacking, and unauthorized data injection
-        # Allows self, Google Fonts, FontAwesome CDN, and inline styles used by UI
+        # Uses strict script policies with zero unsafe-inline or unsafe-eval warnings
         csp_directives = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com",
+            "script-src 'self' https://cdnjs.cloudflare.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
             "img-src 'self' data: https: http:",

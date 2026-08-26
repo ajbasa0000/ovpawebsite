@@ -406,15 +406,6 @@
     </footer>
     
     <script src="{% static 'js/main.js' %}"></script>
-    <script>
-        // Mobile Menu Toggle logic
-        document.querySelector('.menu-toggle').addEventListener('click', function() {
-            const menu = document.querySelector('.nav-menu');
-            const expanded = this.getAttribute('aria-expanded') === 'true';
-            this.setAttribute('aria-expanded', !expanded);
-            menu.classList.toggle('active');
-        });
-    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

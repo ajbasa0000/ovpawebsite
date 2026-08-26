@@ -262,4 +262,63 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+
+    // Cash Office Offcanvas Drawer Handler
+    const btnOpenDrawer = document.getElementById('btn-open-drawer');
+    const btnCloseDrawer = document.getElementById('btn-close-drawer');
+    const drawer = document.getElementById('check-offcanvas-drawer');
+    const drawerOverlay = document.getElementById('drawer-overlay');
+
+    function openDrawer() {
+        if (drawerOverlay && drawer) {
+            drawerOverlay.style.display = 'block';
+            setTimeout(() => {
+                drawerOverlay.style.opacity = '1';
+                drawer.style.right = '0';
+            }, 10);
+        }
+    }
+
+    function closeDrawer() {
+        if (drawerOverlay && drawer) {
+            drawer.style.right = '-550px';
+            drawerOverlay.style.opacity = '0';
+            setTimeout(() => {
+                drawerOverlay.style.display = 'none';
+            }, 350);
+        }
+    }
+
+    if (btnOpenDrawer) btnOpenDrawer.addEventListener('click', openDrawer);
+    if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeDrawer);
+    if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('q') || urlParams.has('status')) {
+        openDrawer();
+    }
+
+    // Dynamic Section TOC for Structured Pages
+    const contentContainer = document.getElementById("page-main-content");
+    const sidebar = document.getElementById("page-sidebar");
+    const navContainer = document.getElementById("nav-tabs-container");
+
+    if (contentContainer && sidebar && navContainer) {
+        const headings = contentContainer.querySelectorAll("h3");
+        if (headings.length > 0) {
+            sidebar.style.display = "block";
+            headings.forEach((heading, index) => {
+                if (!heading.id) {
+                    heading.id = "section-" + (index + 1);
+                }
+                const link = document.createElement("a");
+                link.href = "#" + heading.id;
+                link.className = "nav-tab";
+                link.innerHTML = `<span class="nav-tab-dot"></span><span>${heading.innerText}</span>`;
+                if (index === 0) link.classList.add("active");
+                navContainer.appendChild(link);
+            });
+        }
+    }
 });
+
