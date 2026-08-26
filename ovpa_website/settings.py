@@ -19,11 +19,16 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
-# Add Vercel deployment URL and wildcards if running on Vercel
-if config('VERCEL_URL', default=None):
-    ALLOWED_HOSTS.append(config('VERCEL_URL'))
-    ALLOWED_HOSTS.append('.vercel.app')
+_raw_allowed = config('ALLOWED_HOSTS', default='*')
+if _raw_allowed == '*':
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = [h.strip() for h in _raw_allowed.split(',') if h.strip()]
+
+# Always include server IP and domain patterns
+for host in ['ovpa-dev.up.edu.ph', 'dev-ovpawebsite.up.edu.ph', '172.20.7.172', 'localhost', '127.0.0.1', '.up.edu.ph']:
+    if host not in ALLOWED_HOSTS and '*' not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
 
 
 
