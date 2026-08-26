@@ -113,6 +113,11 @@ else:
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
+# Auth URLs
+LOGIN_URL = 'admin:login'
+LOGIN_REDIRECT_URL = 'dashboard_home'
+LOGOUT_REDIRECT_URL = 'home'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
