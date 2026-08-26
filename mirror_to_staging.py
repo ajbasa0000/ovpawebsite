@@ -2,7 +2,6 @@ import os
 import sys
 import subprocess
 import paramiko
-import io
 
 HOSTNAME = '172.20.7.172'
 PORT = 21712
@@ -53,7 +52,6 @@ def dump_and_sync_database(client, sftp):
     local_dump_file = os.path.join(LOCAL_DIR, 'local_data_dump.json')
     remote_dump_file = f"{REMOTE_DIR}/local_data_dump.json"
     
-    # Python script to dumpdata cleanly with UTF-8 encoding
     dump_script = """import os, sys, django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ovpa_website.settings')
 django.setup()
@@ -111,12 +109,13 @@ def main():
     if os.path.exists(local_media):
         sync_media_files(sftp, local_media, f"{REMOTE_DIR}/media")
 
-    # 4. Pull Git commits & Run Migrations
+    # 4. Force Reset Git to Origin/Master & Run Migrations & Collect Static
     remote_script = f"""
 set -e
 cd {REMOTE_DIR}
-echo "--> Pulling latest git commits..."
-git pull origin master
+echo "--> Force syncing repository with origin/master..."
+git fetch origin master
+git reset --hard origin/master
 
 echo "--> Applying database migrations..."
 source venv/bin/activate
@@ -128,6 +127,10 @@ python manage.py collectstatic --noinput
 echo "--> Setting permissions..."
 chown -R {SSH_USER}:www-data {REMOTE_DIR}/media {REMOTE_DIR}/logs
 chmod -R 775 {REMOTE_DIR}/media {REMOTE_DIR}/logs
+
+echo "--> Restarting Gunicorn & Nginx..."
+systemctl restart ovpa_website
+systemctl reload nginx
 """
     cmd = f"echo '{SSH_PASS}' | sudo -S bash -c \"{remote_script}\""
     stdin, stdout, stderr = client.exec_command(cmd)

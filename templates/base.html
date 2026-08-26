@@ -131,14 +131,16 @@
         <div class="header-main">
             <div class="container" style="display: flex; justify-content: space-between; align-items: center; gap: 1.5rem;">
                 <div class="site-branding">
-                    <div style="flex-shrink: 0;">
-                        <!-- Logo Placeholder - UP Seal -->
-                        <div style="width: 50px; height: 50px; background: var(--color-maroon-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-family: var(--font-heading);">UP</div>
-                    </div>
-                    <div>
-                        <h1 class="site-title">Office of the Vice President for Administration</h1>
-                        <p class="site-description">Honor and Excellence in University Administration</p>
-                    </div>
+                    <a href="{% url 'home' %}" style="display: flex; align-items: center; gap: 1rem; text-decoration: none; color: inherit;">
+                        <div style="flex-shrink: 0;">
+                            <!-- Official UP Seal -->
+                            <img src="/media/UP-Seal.png" alt="University of the Philippines Seal" style="width: 58px; height: 58px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                        </div>
+                        <div>
+                            <h1 class="site-title">Office of the Vice President for Administration</h1>
+                            <p class="site-description">Honor and Excellence in University Administration</p>
+                        </div>
+                    </a>
                 </div>
 
                 <!-- Header Far-Right Accreditation & Certification Logos -->
