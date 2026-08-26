@@ -23,52 +23,62 @@
         </p>
 
         <!-- Primary Call to Action Buttons -->
-        <div style="display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; margin-bottom: 2.5rem;">
-            <button type="button" id="btn-open-drawer" class="btn" style="background: #facc15; color: #7b1113; font-weight: 800; font-size: 1.1rem; padding: 1rem 2rem; border-radius: 14px; border: none; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 0.75rem; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
-                <i class="fa-solid fa-key" style="font-size: 1.2rem;"></i>
-                <span>Supplier Check Status Portal</span>
-                <span style="background: #7b1113; color: white; padding: 0.25rem 0.65rem; border-radius: 20px; font-size: 0.8rem; font-weight: 800;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <button type="button" id="btn-open-drawer" class="btn" style="background: #F8D677; color: #7B1113; font-weight: 800; font-size: 1rem; padding: 0.9rem 1.5rem; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; gap: 0.65rem; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
+                <i class="fa-solid fa-key" style="font-size: 1.1rem;"></i>
+                <span>Supplier Check Status</span>
+                <span style="background: #7B1113; color: white; padding: 0.2rem 0.55rem; border-radius: 20px; font-size: 0.75rem; font-weight: 800;">
                     {{ stats_summary.ready_count|default:0 }} Ready
                 </span>
             </button>
 
-            <a href="#citizens-charter" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.4); font-weight: 600; font-size: 1rem; padding: 1rem 1.75rem; border-radius: 14px; display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fa-solid fa-shield-halved"></i> Citizen's Charter Standards
+            <a href="#citizens-charter" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.06); font-weight: 600; font-size: 0.95rem; padding: 0.9rem 1.5rem; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none;">
+                <i class="fa-solid fa-shield-halved" style="color: #F8D677;"></i> Citizen's Charter Standards
             </a>
             
-            <a href="#process-flows" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.4); font-weight: 600; font-size: 1rem; padding: 1rem 1.75rem; border-radius: 14px; display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fa-solid fa-diagram-project"></i> ISO Process Flows
+            <a href="#process-flows" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.06); font-weight: 600; font-size: 0.95rem; padding: 0.9rem 1.5rem; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none;">
+                <i class="fa-solid fa-diagram-project" style="color: #F8D677;"></i> ISO Process Flows
             </a>
         </div>
 
-        <!-- Quick Info Badges -->
-        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
-            <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(10px); padding: 0.75rem 1.25rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 0.75rem;">
-                <i class="fa-solid fa-clock" style="color: #facc15; font-size: 1.25rem;"></i>
+        <!-- Quick Info Badges Grid (Clean & Uniform) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            <!-- Cashier Hours -->
+            <div style="background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 1rem 1.25rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: flex-start; gap: 0.85rem;">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(248, 214, 119, 0.15); color: #F8D677; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fa-solid fa-clock" style="font-size: 1rem;"></i>
+                </div>
                 <div>
-                    <div style="font-size: 0.75rem; opacity: 0.8; text-transform: uppercase;">Cashier Hours</div>
-                    <div style="font-weight: 600; font-size: 0.95rem;">{{ sco_page.cashier_hours|default:"Mon - Fri: 8:00 AM - 5:00 PM (No Noon Break)" }}</div>
+                    <div style="font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 2px;">Cashier Hours</div>
+                    <div style="font-weight: 600; font-size: 0.9rem; line-height: 1.4;">{{ sco_page.cashier_hours|default:"Mon - Fri: 8:00 AM - 5:00 PM (No Noon Break)" }}</div>
                 </div>
             </div>
 
-            <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(10px); padding: 0.75rem 1.25rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 0.75rem;">
-                <i class="fa-solid fa-location-dot" style="color: #facc15; font-size: 1.25rem;"></i>
+            <!-- Office Location -->
+            <div style="background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 1rem 1.25rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: flex-start; gap: 0.85rem;">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(248, 214, 119, 0.15); color: #F8D677; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fa-solid fa-location-dot" style="font-size: 1rem;"></i>
+                </div>
                 <div>
-                    <div style="font-size: 0.75rem; opacity: 0.8; text-transform: uppercase;">Office Location</div>
-                    <div style="font-weight: 600; font-size: 0.95rem;">{{ sco_page.office_location }}</div>
+                    <div style="font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 2px;">Office Location</div>
+                    <div style="font-weight: 600; font-size: 0.9rem; line-height: 1.4;">{{ sco_page.office_location|default:"SFAB Building, Magsaysay rd. cor Agoncillo, UP Diliman Campus, Quezon City" }}</div>
                 </div>
             </div>
 
-            <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(10px); padding: 0.75rem 1.25rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 0.75rem;">
-                <i class="fa-solid fa-phone" style="color: #facc15; font-size: 1.25rem;"></i>
+            <!-- Trunkline & VOIP -->
+            <div style="background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 1rem 1.25rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: flex-start; gap: 0.85rem;">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(248, 214, 119, 0.15); color: #F8D677; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fa-solid fa-phone" style="font-size: 1rem;"></i>
+                </div>
                 <div>
-                    <div style="font-size: 0.75rem; opacity: 0.8; text-transform: uppercase;">Trunkline & VOIP</div>
-                    <div style="font-weight: 600; font-size: 0.95rem;">{{ sco_page.releasing_phone }} | {{ sco_page.voip_extensions }}</div>
+                    <div style="font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 2px;">Trunkline & VOIP Extensions</div>
+                    <div style="font-weight: 600; font-size: 0.9rem; line-height: 1.4;">(02) 8981-8500 loc. 2540 / 2618 | VOIP: 2540 / 2618</div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- Citizen's Charter & Fast-Track Guarantees Banner -->
 <section id="citizens-charter" class="section" style="padding: 4rem 0; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
